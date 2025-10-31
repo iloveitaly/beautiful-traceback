@@ -21,13 +21,13 @@ try:
 except ImportError:
     import builtins
 
-import test.fixtures
+import tests.fixtures
 
 import pytest
 
-from pretty_traceback import common
-from pretty_traceback import parsing
-from pretty_traceback import formatting
+from beautiful_traceback import common
+from beautiful_traceback import parsing
+from beautiful_traceback import formatting
 
 text_type = getattr(builtins, "unicode", str)
 
@@ -70,7 +70,7 @@ def env_setup():
 
 
 def test_formatting_basic():
-    for trace_str in test.fixtures.ALL_TRACEBACK_STRS:
+    for trace_str in tests.fixtures.ALL_TRACEBACK_STRS:
         tracebacks = parsing.parse_tracebacks(trace_str)
         for traceback in tracebacks:
             tb_str = formatting.format_traceback(traceback)
@@ -99,7 +99,7 @@ FORMATTING_TEST_CASES = [
 
 @pytest.mark.parametrize("fixture_index, term_width, pathsep_re", FORMATTING_TEST_CASES)
 def test_formatting(fixture_index, term_width, pathsep_re, env_setup):
-    trace_str = test.fixtures.ALL_TRACEBACK_STRS[fixture_index]
+    trace_str = tests.fixtures.ALL_TRACEBACK_STRS[fixture_index]
     for traceback in parsing.parse_tracebacks(trace_str):
         ctx = formatting._init_entries_context(traceback.entries, term_width=term_width)
         tb_str = formatting._format_traceback(ctx, traceback)
@@ -197,7 +197,7 @@ def main():
 
     formatting.PWD = "/home/user/foss/myproject"
     formatting.TEST_PATHS = TEST_PATHS_WIN + TEST_PATHS_UNIX
-    trace_strs = test.fixtures.ALL_TRACEBACK_STRS
+    trace_strs = tests.fixtures.ALL_TRACEBACK_STRS
 
     for trace_str in trace_strs:
         tracebacks = parsing.parse_tracebacks(trace_str)

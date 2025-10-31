@@ -10,6 +10,9 @@ resolution-markers = [
 name = "beautiful-traceback"
 version = "0.1.0"
 source = { editable = "." }
+dependencies = [
+    { name = "colorama" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -17,6 +20,7 @@ dev = [
 ]
 
 [package.metadata]
+requires-dist = [{ name = "colorama", specifier = ">=0.4.6" }]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=8.3.3" }]

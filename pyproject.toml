@@ -1,11 +1,11 @@
 [project]
 name = "beautiful-traceback"
 version = "0.1.0"
-description = ""
-keywords = []
+description = "Beautiful, readable Python tracebacks with colors and formatting"
+keywords = ["traceback", "error", "debugging", "formatting"]
 readme = "README.md"
 requires-python = ">=3.9"
-dependencies = []
+dependencies = ["colorama>=0.4.6"]
 authors = [{ name = "Michael Bianco", email = "mike@mikebian.co" }]
 urls = { "Repository" = "https://github.com/iloveitaly/beautiful-traceback" }
 

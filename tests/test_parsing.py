@@ -5,9 +5,9 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import test.fixtures
+import tests.fixtures
 
-from pretty_traceback import parsing
+from beautiful_traceback import parsing
 
 
 def _validate_traceback(tb_result, tb_expect):
@@ -29,15 +29,15 @@ def _validate_traceback(tb_result, tb_expect):
 
 
 def test_parse_basic_trace():
-    traceback_results = parsing.parse_tracebacks(test.fixtures.BASIC_TRACEBACK_STR)
+    traceback_results = parsing.parse_tracebacks(tests.fixtures.BASIC_TRACEBACK_STR)
 
     assert len(traceback_results) == 1
     tb_result = traceback_results[0]
-    tb_expect = test.fixtures.BASIC_TRACEBACK
+    tb_expect = tests.fixtures.BASIC_TRACEBACK
     _validate_traceback(tb_result, tb_expect)
 
 
 def test_parse_nested_trace():
-    traceback_results = parsing.parse_tracebacks(test.fixtures.CHAINED_TRACEBACK_STR)
-    for tb_result, tb_expect in zip(traceback_results, test.fixtures.CHAINED_TRACEBACK):
+    traceback_results = parsing.parse_tracebacks(tests.fixtures.CHAINED_TRACEBACK_STR)
+    for tb_result, tb_expect in zip(traceback_results, tests.fixtures.CHAINED_TRACEBACK):
         _validate_traceback(tb_result, tb_expect)

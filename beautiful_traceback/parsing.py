@@ -1,5 +1,5 @@
-# This file is part of the pretty-traceback project
-# https://github.com/mbarkhau/pretty-traceback
+# This file is part of the beautiful-traceback project
+# https://github.com/iloveitaly/beautiful-traceback
 #
 # Copyright (c) 2020-2024 Manuel Barkhau (mbarkhau@gmail.com) - MIT License
 # SPDX-License-Identifier: MIT
@@ -7,7 +7,7 @@
 import re
 import typing as typ
 
-import pretty_traceback.common as com
+import beautiful_traceback.common as com
 
 # TODO (mb 2020-08-12): path/module with doublequotes in them.
 #   Not even sure what python does with that.

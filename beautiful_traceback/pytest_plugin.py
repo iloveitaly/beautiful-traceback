@@ -21,14 +21,14 @@ def _get_option(config: Config, key: str):
 
 def pytest_addoption(parser):
     parser.addini(
-        "enable_pretty_traceback",
+        "enable_beautiful_traceback",
         "Enable the pretty traceback plugin",
         type="bool",
         default=True,
     )
 
     parser.addini(
-        "enable_pretty_traceback_local_stack_only",
+        "enable_beautiful_traceback_local_stack_only",
         "Enable the pretty traceback plugin",
         type="bool",
         default=True,
@@ -38,7 +38,7 @@ def pytest_addoption(parser):
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     """
-    Pytest stack traces are challenging to work with by default. This plugin allows pretty_traceback to be used instead.
+    Pytest stack traces are challenging to work with by default. This plugin allows beautiful_traceback to be used instead.
 
     This little piece of code was hard-won:
 
@@ -48,13 +48,13 @@ def pytest_runtest_makereport(item, call):
     report = outcome.get_result()  # Get the generated TestReport object
 
     # Check if the report is for the 'call' phase (test execution) and if it failed
-    if _get_option(item.config, "enable_pretty_traceback") and report.failed:
+    if _get_option(item.config, "enable_beautiful_traceback") and report.failed:
         value = call.excinfo.value
         tb = call.excinfo.tb
 
         print(
             "hello this is the value",
-            _get_option(item.config, "enable_pretty_traceback_local_stack_only"),
+            _get_option(item.config, "enable_beautiful_traceback_local_stack_only"),
         )
 
         formatted_traceback = formatting.exc_to_traceback_str(
@@ -62,7 +62,7 @@ def pytest_runtest_makereport(item, call):
             tb,
             color=True,
             local_stack_only=_get_option(
-                item.config, "enable_pretty_traceback_local_stack_only"
+                item.config, "enable_beautiful_traceback_local_stack_only"
             ),
         )
         report.longrepr = formatted_traceback
@@ -82,7 +82,7 @@ def pytest_exception_interact(node, call, report):
             tb,
             color=True,
             local_stack_only=_get_option(
-                node.config, "enable_pretty_traceback_local_stack_only"
+                node.config, "enable_beautiful_traceback_local_stack_only"
             ),
         )
         report.longrepr = formatted_traceback

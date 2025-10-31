@@ -1,5 +1,5 @@
-# This file is part of the pretty-traceback project
-# https://github.com/mbarkhau/pretty-traceback
+# This file is part of the beautiful-traceback project
+# https://github.com/iloveitaly/beautiful-traceback
 #
 # Copyright (c) 2020-2024 Manuel Barkhau (mbarkhau@gmail.com) - MIT License
 # SPDX-License-Identifier: MIT
@@ -11,7 +11,7 @@ import typing as typ
 
 import colorama
 
-from pretty_traceback import formatting
+from beautiful_traceback import formatting
 
 
 def init_excepthook(color: bool, local_stack_only: bool) -> typ.Callable:
@@ -46,9 +46,9 @@ def install(
     only_hook_if_default_excepthook: bool = True,
     local_stack_only: bool = False,
 ) -> None:
-    """Hook the current excepthook to the pretty_traceback.
+    """Hook the current excepthook to the beautiful_traceback.
 
-    If you set `only_tty=False`, pretty_traceback will always
+    If you set `only_tty=False`, beautiful_traceback will always
     be active even when stdout is piped or redirected.
 
     Color output respects the NO_COLOR environment variable
