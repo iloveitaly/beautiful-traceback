@@ -24,54 +24,6 @@ Beautiful Traceback groups together what belongs together, adds coloring and ali
 
 ![Comparison of standard Python traceback vs Beautiful Traceback](comparison.webp)
 
-In other words, get this 😍
-
-```
-Aliases for entries in sys.path:
-    <pwd>: /home/user/myproject/
-Traceback (most recent call last):
-    <pwd> examples/simple.py:77  <module>           main()
-    <pwd> examples/simple.py:72  main               results = process_batch(batches)
-    <pwd> examples/simple.py:48  process_batch      avg = calculate_average(batch)
-    <pwd> examples/simple.py:35  calculate_average  raise ValueError("Cannot calculate average of empty list")
-ValueError: Cannot calculate average of empty list
-```
-
-Instead of this 🤮
-
-```
-Traceback (most recent call last):
-  File "test/test_formatting.py", line 199, in <module>
-    main()
-  File "test/test_formatting.py", line 190, in main
-    run_pingpong()
-  File "test/test_formatting.py", line 161, in run_pingpong
-    sched3.run()
-  File "/home/mbarkhau/miniconda3/envs/beautiful-traceback_py38/lib/python3.8/sched.py", line 151, in run
-    action(*argument, **kwargs)
-  File "/home/mbarkhau/miniconda3/envs/beautiful-traceback_py38/lib/python3.8/sched.py", line 151, in run
-    action(*argument, **kwargs)
-  File "/home/mbarkhau/miniconda3/envs/beautiful-traceback_py38/lib/python3.8/sched.py", line 151, in run
-    action(*argument, **kwargs)
-  File "test/test_formatting.py", line 151, in _ping
-    _pong(depth + 1)
-  File "test/test_formatting.py", line 129, in _pong
-    _ping(depth + 1)
-  File "test/test_formatting.py", line 136, in _ping
-    sp.check_output(["command_that", "doesnt", "exist"])
-  File "/home/mbarkhau/miniconda3/envs/beautiful-traceback_py38/lib/python3.8/subprocess.py", line 411, in check_output
-    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
-  File "/home/mbarkhau/miniconda3/envs/beautiful-traceback_py38/lib/python3.8/subprocess.py", line 489, in run
-    with Popen(*popenargs, **kwargs) as process:
-  File "/home/mbarkhau/miniconda3/envs/beautiful-traceback_py38/lib/python3.8/subprocess.py", line 854, in __init__
-    self._execute_child(args, executable, preexec_fn, close_fds,
-  File "/home/mbarkhau/miniconda3/envs/beautiful-traceback_py38/lib/python3.8/subprocess.py", line 1702, in _execute_child
-    raise child_exception_type(errno_num, err_msg, err_filename)
-FileNotFoundError: [Errno 2] No such file or directory: 'command_that'
-```
-
-If your terminal is wide enough, the long paths are preserved for better navigation.
-
 ## Installation
 
 ### From PyPI (when published)
@@ -190,7 +142,7 @@ enable_beautiful_traceback_local_stack_only = true
 
 Check out the [examples/](examples/) directory for detailed usage examples:
 
-- **[simple.py](examples/simple.py)** - Quick single-exception demo ⭐ Start here!
+- **[simple.py](examples/simple.py)** - Quick single-exception demo - Start here!
 - **[demo.py](examples/demo.py)** - Interactive demo with 6 exception types
 - **[basic_example.py](examples/basic_example.py)** - Basic installation and usage
 - **[chained_exceptions.py](examples/chained_exceptions.py)** - Exception chaining with `raise ... from`

@@ -7,12 +7,13 @@
   - Priority: 🔥🔥🔥 IMMEDIATE
   - ✅ **COMPLETED: 2025-10-31** - Removed debug print, all tests passing
 
-- [ ] **Investigate and fix infinite loop bug**
+- [x] **Investigate and fix infinite loop bug**
   - File: See `TODO` file
   - Issue: `raise httpx.ConnectError("Connection failed")` causes infinite loop
   - Impact: CRITICAL - Can hang applications
   - Action: Add recursion protection in exception handling
   - Priority: 🔥🔥 HIGH
+  - ✅ **COMPLETED: 2025-10-31** - Added circular reference detection using exception IDs, created comprehensive tests
 
 ---
 
@@ -68,12 +69,13 @@
 
 ## 🧪 Testing
 
-- [ ] **Add pytest plugin tests**
+- [x] **Add pytest plugin tests**
   - Test automatic activation
   - Test configuration options
   - Test with failing tests
   - Test with collection errors
   - Priority: ⚠️ MEDIUM
+  - ✅ **COMPLETED: 2025-10-31** - Created 11 comprehensive tests covering plugin hooks, configuration, formatting options, and integration
 
 - [ ] **Add IPython extension tests**
   - Test load_ipython_extension
