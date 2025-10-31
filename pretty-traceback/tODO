@@ -1,0 +1,33 @@
+from more_itertools import loops
+
+
+- [ ] option to disable dumping path aliases in stack trace
+- [ ] stack traces in pytest are long and include pytest internals
+
+```
+def _is_purely_internal_error(tb):
+    """Check if traceback contains only pytest/pluggy frames and no user code"""
+    internal_patterns = ('_pytest/', 'pytest.py', 'pluggy/')
+
+    while tb:
+        filename = tb.tb_frame.f_code.co_filename
+        # If we find a non-internal frame, it's not purely internal
+        if not any(pattern in filename for pattern in internal_patterns):
+            return False
+        tb = tb.tb_next
+
+    # If we only saw internal frames, it's a purely internal error
+    return True
+```
+
+This seems wrong, there should be some default way to do this
+
+for ipython we need to do this
+    https://github.com/Textualize/rich/blob/e1e6d745f670ff3df6b8f47377c0a4006cb74066/rich/traceback.py#L45
+
+
+this failed and caused an infinite loop
+
+```
+raise httpx.ConnectError("Connection failed")
+```
