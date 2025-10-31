@@ -1,9 +1,3 @@
-# This file is part of the beautiful-traceback project
-# https://github.com/iloveitaly/beautiful-traceback
-#
-# Copyright (c) 2020-2024 Manuel Barkhau (mbarkhau@gmail.com) - MIT License
-# SPDX-License-Identifier: MIT
-
 import os
 import sys
 import types
