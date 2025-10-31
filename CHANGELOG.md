@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/iloveitaly/beautiful-traceback/compare/v0.1.0...v0.1.1) (2025-10-31)
+
+
+### Documentation
+
+* update license link format in README.md ([8ae4d1d](https://github.com/iloveitaly/beautiful-traceback/commit/8ae4d1df69b679abdd10b4d3aa71afbb1c68c13c))
+
 ## 0.1.0 (2025-10-31)
 
 
