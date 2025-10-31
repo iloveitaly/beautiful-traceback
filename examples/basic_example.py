@@ -36,6 +36,6 @@ if __name__ == "__main__":
     print("Beautiful Traceback Example")
     print("=" * 40)
     print("\nAbout to trigger an exception...\n")
-    
+
     # This will trigger a beautiful traceback
     level_1()

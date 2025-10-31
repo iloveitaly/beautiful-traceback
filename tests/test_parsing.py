@@ -39,5 +39,7 @@ def test_parse_basic_trace():
 
 def test_parse_nested_trace():
     traceback_results = parsing.parse_tracebacks(tests.fixtures.CHAINED_TRACEBACK_STR)
-    for tb_result, tb_expect in zip(traceback_results, tests.fixtures.CHAINED_TRACEBACK):
+    for tb_result, tb_expect in zip(
+        traceback_results, tests.fixtures.CHAINED_TRACEBACK
+    ):
         _validate_traceback(tb_result, tb_expect)

@@ -24,6 +24,7 @@ __all__ = [
 
 def main():
     import logging
+
     logging.basicConfig(level="INFO")
     logger = logging.getLogger(__name__)
     logger.info("Beautiful Traceback installed!")

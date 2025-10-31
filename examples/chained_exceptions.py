@@ -15,10 +15,10 @@ beautiful_traceback.install()
 def fetch_data(key):
     """Simulate fetching data that might fail."""
     data = {"user": "alice", "age": 30}
-    
+
     if key not in data:
         raise KeyError(f"Key '{key}' not found in data")
-    
+
     return data[key]
 
 
@@ -44,5 +44,5 @@ if __name__ == "__main__":
     print("Beautiful Traceback - Chained Exceptions Example")
     print("=" * 50)
     print("\nThis will show a chained exception traceback...\n")
-    
+
     run_workflow()

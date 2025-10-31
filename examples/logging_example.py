@@ -26,10 +26,10 @@ def calculate_average(numbers):
     """Calculate average of a list of numbers."""
     if not numbers:
         raise ValueError("Cannot calculate average of empty list")
-    
+
     total = sum(numbers)
     count = len(numbers)
-    
+
     # This will fail if count is 0
     return divide_numbers(total, count)
 
@@ -37,16 +37,16 @@ def calculate_average(numbers):
 def process_data():
     """Process some data - will log errors beautifully."""
     logger.info("Starting data processing")
-    
+
     try:
         # This will succeed
         result1 = calculate_average([1, 2, 3, 4, 5])
         logger.info(f"First average: {result1}")
-        
+
         # This will fail
         result2 = calculate_average([])
         logger.info(f"Second average: {result2}")
-        
+
     except Exception as e:
         logger.exception("Error during data processing")
         raise
@@ -56,5 +56,5 @@ if __name__ == "__main__":
     print("Beautiful Traceback - Logging Example")
     print("=" * 45)
     print("\nThis will show beautiful tracebacks in log output...\n")
-    
+
     process_data()
