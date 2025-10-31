@@ -460,7 +460,7 @@ def exc_to_traceback_str(
 
     cur_exc_value: BaseException = exc_value
     cur_traceback: types.TracebackType = traceback
-    
+
     # Track seen exceptions to prevent infinite loops from circular references
     seen_exceptions: typ.Set[int] = set()
 
@@ -471,7 +471,7 @@ def exc_to_traceback_str(
             # Circular reference detected, break the loop
             break
         seen_exceptions.add(exc_id)
-        
+
         next_cause = getattr(cur_exc_value, "__cause__", None)
         next_context = getattr(cur_exc_value, "__context__", None)
 

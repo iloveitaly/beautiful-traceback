@@ -17,7 +17,7 @@ import random
 import subprocess as sp
 
 try:
-    import __builtin__ as builtins
+    import __builtin__ as builtins  # type: ignore[import-not-found]
 except ImportError:
     import builtins
 
@@ -159,7 +159,9 @@ def test_pingpong():
         run_pingpong()
     except KeyError:
         exc_type, exc_value, traceback = sys.exc_info()
-        assert exc_type == type(exc_value)
+        assert exc_type is type(exc_value)
+        assert exc_value is not None
+        assert traceback is not None
         tb_str = formatting.exc_to_traceback_str(exc_value, traceback, color=False)
         assert isinstance(tb_str, text_type)
         # TODO (mb 2020-08-14): compare to test.fixture.CHAINED_TRACEBACK
@@ -188,6 +190,8 @@ def run_max_recursion():
         _mutual_recurse_a()
     except RecursionError:
         _exc_type, exc_value, traceback = sys.exc_info()
+        assert exc_value is not None
+        assert traceback is not None
         tb_str = formatting.exc_to_traceback_str(exc_value, traceback, color=True)
         print(tb_str)
 
@@ -212,6 +216,8 @@ def main():
         run_pingpong()
     except KeyError:
         _, exc_value, traceback = sys.exc_info()
+        assert exc_value is not None
+        assert traceback is not None
         tb_str = formatting.exc_to_traceback_str(exc_value, traceback, color=True)
         print(tb_str)
 

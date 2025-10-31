@@ -8,7 +8,6 @@ This script demonstrates the same error twice:
 """
 
 
-
 def level_3():
     """Deepest level - this is where the error happens."""
     result = 42 / 0
@@ -34,11 +33,12 @@ def show_standard_traceback():
     print("STANDARD PYTHON TRACEBACK")
     print("=" * 60)
     print()
-    
+
     try:
         level_1()
     except Exception:
         import traceback
+
         traceback.print_exc()
 
 
@@ -50,19 +50,20 @@ def show_beautiful_traceback():
     print("WITH BEAUTIFUL-TRACEBACK")
     print("=" * 60)
     print()
-    
+
     import beautiful_traceback
+
     beautiful_traceback.install()
-    
+
     level_1()
 
 
 if __name__ == "__main__":
     print("\nComparison: Standard vs Beautiful Traceback")
     print()
-    
+
     # Show standard traceback first
     show_standard_traceback()
-    
+
     # Show beautiful traceback
     show_beautiful_traceback()
