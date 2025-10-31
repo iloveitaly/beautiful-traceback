@@ -21,7 +21,12 @@ def init_excepthook(color: bool, local_stack_only: bool) -> typ.Callable:
         traceback: types.TracebackType,
     ) -> None:
         # pylint:disable=unused-argument
-        tb_str = formatting.exc_to_traceback_str(exc_value, traceback, color, local_stack_only) + "\n"
+        tb_str = (
+            formatting.exc_to_traceback_str(
+                exc_value, traceback, color, local_stack_only
+            )
+            + "\n"
+        )
         if color:
             colorama.init()
             try:

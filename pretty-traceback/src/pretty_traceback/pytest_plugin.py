@@ -48,16 +48,14 @@ def pytest_runtest_makereport(item, call):
     report = outcome.get_result()  # Get the generated TestReport object
 
     # Check if the report is for the 'call' phase (test execution) and if it failed
-    if (
-        _get_option(item.config, "enable_pretty_traceback")
-        and report.failed
-    ):
+    if _get_option(item.config, "enable_pretty_traceback") and report.failed:
         value = call.excinfo.value
         tb = call.excinfo.tb
 
-        print("hello this is the value", _get_option(
-                item.config, "enable_pretty_traceback_local_stack_only"
-            ))
+        print(
+            "hello this is the value",
+            _get_option(item.config, "enable_pretty_traceback_local_stack_only"),
+        )
 
         formatted_traceback = formatting.exc_to_traceback_str(
             value,
