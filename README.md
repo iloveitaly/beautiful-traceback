@@ -140,13 +140,7 @@ enable_beautiful_traceback_local_stack_only = true
 
 ## Examples
 
-Check out the [examples/](examples/) directory for detailed usage examples:
-
-- **[simple.py](examples/simple.py)** - Quick single-exception demo - Start here!
-- **[demo.py](examples/demo.py)** - Interactive demo with 6 exception types
-- **[basic_example.py](examples/basic_example.py)** - Basic installation and usage
-- **[chained_exceptions.py](examples/chained_exceptions.py)** - Exception chaining with `raise ... from`
-- **[logging_example.py](examples/logging_example.py)** - Integration with Python logging
+Check out the [examples/](examples/) directory for detailed usage examples including basic usage, exception chaining, logging integration, and more.
 
 ```bash
 # Quick single-exception example
@@ -155,8 +149,6 @@ uv run examples/simple.py
 # Interactive demo with multiple exception types
 uv run examples/demo.py
 ```
-
-See the [examples README](examples/README.md) for more details.
 
 ## Configuration
 
@@ -194,6 +186,38 @@ class MyFormatter(beautiful_traceback.LoggingFormatterMixin, logging.Formatter):
 
 This gives you full control over the log format while adding beautiful traceback support.
 
+## Global Installation via PTH File
+
+You can enable beautiful-traceback across all Python projects without modifying any source code by using a `.pth` file. Python automatically executes import statements in `.pth` files during interpreter startup, making this perfect for development environments.
+
+Add this function to your `.zshrc` or `.bashrc`:
+
+```bash
+# Create a file to automatically import beautiful-traceback on startup
+python-inject-beautiful-traceback() {
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+
+  local pth_file=$site_packages/beautiful_traceback_injection.pth
+  local py_file=$site_packages/_beautiful_traceback_injection.py
+
+  cat <<'EOF' >"$py_file"
+def run_startup_script():
+  try:
+    import beautiful_traceback
+    beautiful_traceback.install()
+  except ImportError:
+    pass
+
+run_startup_script()
+EOF
+
+  echo "import _beautiful_traceback_injection" >"$pth_file"
+  echo "Beautiful traceback injection created: $pth_file"
+}
+```
+
+After sourcing your shell config, run `python-inject-beautiful-traceback` to enable beautiful tracebacks globally for that Python environment.
+
 ## Alternatives
 
 Beautiful Traceback is heavily inspired by the backtrace module by [nir0s](https://github.com/nir0s/backtrace) but there are many others (sorted by github stars):
@@ -205,6 +229,7 @@ Beautiful Traceback is heavily inspired by the backtrace module by [nir0s](https
 - https://github.com/aroberge/friendly-traceback
 - https://github.com/HallerPatrick/frosch
 - https://github.com/nir0s/backtrace
+- https://github.com/mbarkhau/pretty-traceback
 - https://github.com/staticshock/colored-traceback.py
 - https://github.com/chillaranand/ptb
 - https://github.com/laurb9/rich-traceback
