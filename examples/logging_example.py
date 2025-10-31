@@ -47,7 +47,7 @@ def process_data():
         result2 = calculate_average([])
         logger.info(f"Second average: {result2}")
 
-    except Exception as e:
+    except Exception:
         logger.exception("Error during data processing")
         raise
 

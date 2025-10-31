@@ -7,8 +7,6 @@ This script demonstrates the same error twice:
 2. Then with beautiful-traceback formatting
 """
 
-import sys
-import subprocess
 
 
 def level_3():
