@@ -18,7 +18,11 @@ build-backend = "uv_build"
 module-root = ""
 
 [dependency-groups]
-dev = ["pytest>=8.3.3"]
+dev = [
+    "pytest>=8.3.3",
+    "ruff>=0.8.0",
+    "pyright>=1.1.380",
+]
 
 [project.entry-points.pytest11]
 beautiful_traceback = "beautiful_traceback.pytest_plugin"
