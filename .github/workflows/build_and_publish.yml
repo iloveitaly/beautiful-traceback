@@ -22,10 +22,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: jdx/mise-action@v3
+        env:
+          MISE_ENV: ci
       - uses: iloveitaly/github-action-direnv-load-and-mask@master
       - run: uv sync
-      - name: Install jq for pyright reporting
-        run: sudo apt-get update && sudo apt-get install -y jq
       - run: just lint
   
   matrix-test:
