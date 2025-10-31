@@ -7,6 +7,17 @@ Human readable stacktraces for Python.
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
 [![Python Versions](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 
+## Quick Start
+
+The fastest way to see it in action:
+
+```bash
+# Clone and run an example
+git clone https://github.com/iloveitaly/beautiful-traceback
+cd beautiful-traceback
+uv run examples/simple.py
+```
+
 ## Overview
 
 Beautiful Traceback groups together what belongs together, adds coloring and alignment. All of this makes it easier for you to see patterns and filter out the signal from the noise. This tabular format is best viewed in a wide terminal.
@@ -15,7 +26,7 @@ In other words, get this 😍
 
 ```
 Aliases for entries in sys.path:
-    <pwd>: /Users/mike/Projects/python/beautiful-traceback/
+    <pwd>: /home/user/myproject/
 Traceback (most recent call last):
     <pwd> examples/simple.py:77  <module>           main()
     <pwd> examples/simple.py:72  main               results = process_batch(batches)
@@ -61,16 +72,34 @@ If your terminal is wide enough, the long paths are preserved for better navigat
 
 ## Installation
 
-### Using uv (recommended)
+### From PyPI (when published)
 
 ```bash
+# Using uv (recommended)
 uv add beautiful-traceback
+
+# Using pip
+pip install beautiful-traceback
 ```
 
-### Using pip
+### Development Installation
+
+To install from source:
 
 ```bash
-pip install beautiful-traceback
+git clone https://github.com/iloveitaly/beautiful-traceback
+cd beautiful-traceback
+uv sync
+```
+
+Run examples:
+```bash
+uv run examples/simple.py
+```
+
+Run tests:
+```bash
+uv run pytest
 ```
 
 ## Usage
@@ -115,9 +144,55 @@ except ImportError:
     pass    # no need to fail because of missing dev dependency
 ```
 
+## IPython and Jupyter Integration
+
+Beautiful Traceback works seamlessly in IPython and Jupyter notebooks:
+
+```python
+# Load the extension
+%load_ext beautiful_traceback
+
+# Unload if needed
+%unload_ext beautiful_traceback
+```
+
+The extension automatically installs beautiful tracebacks for your interactive session.
+
+## Pytest Integration
+
+Beautiful Traceback includes a pytest plugin that automatically enhances test failure output.
+
+### Automatic Activation
+
+The plugin activates automatically when `beautiful-traceback` is installed. No configuration needed!
+
+### Configuration Options
+
+Customize the plugin in your `pytest.ini` or `pyproject.toml`:
+
+```toml
+[tool.pytest.ini_options]
+enable_beautiful_traceback = true                    # Enable/disable the plugin
+enable_beautiful_traceback_local_stack_only = true   # Show only local code (filter libraries)
+```
+
+Or in `pytest.ini`:
+
+```ini
+[pytest]
+enable_beautiful_traceback = true
+enable_beautiful_traceback_local_stack_only = true
+```
+
 ## Examples
 
-Check out the [examples](examples/) directory for more usage examples:
+Check out the [examples/](examples/) directory for detailed usage examples:
+
+- **[simple.py](examples/simple.py)** - Quick single-exception demo ⭐ Start here!
+- **[demo.py](examples/demo.py)** - Interactive demo with 6 exception types
+- **[basic_example.py](examples/basic_example.py)** - Basic installation and usage
+- **[chained_exceptions.py](examples/chained_exceptions.py)** - Exception chaining with `raise ... from`
+- **[logging_example.py](examples/logging_example.py)** - Integration with Python logging
 
 ```bash
 # Quick single-exception example
@@ -127,7 +202,11 @@ uv run examples/simple.py
 uv run examples/demo.py
 ```
 
-## Options
+See the [examples README](examples/README.md) for more details.
+
+## Configuration
+
+### Installation Options
 
 Beautiful Traceback supports several configuration options:
 
@@ -137,9 +216,29 @@ beautiful_traceback.install(
     only_tty=True,                         # Only activate for TTY output
     only_hook_if_default_excepthook=True,  # Only install if default hook
     local_stack_only=False,                # Filter to show only local code
-    envvar='ENABLE_BEAUTIFUL_TRACEBACK'    # Optional environment variable
+    envvar='ENABLE_BEAUTIFUL_TRACEBACK'    # Optional environment variable gate
 )
 ```
+
+### Environment Variables
+
+- **`NO_COLOR`** - Disables colored output when set (respects [no-color.org](https://no-color.org) standard)
+- **`ENABLE_BEAUTIFUL_TRACEBACK`** - Controls activation when using the `envvar` parameter (set to `1` to enable)
+
+### LoggingFormatterMixin
+
+For more advanced logging integration, you can use `LoggingFormatterMixin` as a base class:
+
+```python
+import logging
+import beautiful_traceback
+
+class MyFormatter(beautiful_traceback.LoggingFormatterMixin, logging.Formatter):
+    def __init__(self):
+        super().__init__(fmt='%(levelname)s: %(message)s')
+```
+
+This gives you full control over the log format while adding beautiful traceback support.
 
 ## Alternatives
 
