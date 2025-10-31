@@ -52,6 +52,9 @@ Demonstrates how beautiful-traceback handles exception chaining (both `raise ...
 ### `logging_example.py`
 Shows how to use `LoggingFormatter` to get beautiful tracebacks in your Python logging output.
 
+### `comparison.py`
+Side-by-side comparison showing the same exception with standard Python traceback vs beautiful-traceback formatting.
+
 ## Features Demonstrated
 
 - ✅ Colored, formatted output

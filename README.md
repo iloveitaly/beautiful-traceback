@@ -22,6 +22,8 @@ uv run examples/simple.py
 
 Beautiful Traceback groups together what belongs together, adds coloring and alignment. All of this makes it easier for you to see patterns and filter out the signal from the noise. This tabular format is best viewed in a wide terminal.
 
+![Comparison of standard Python traceback vs Beautiful Traceback](comparison.png)
+
 In other words, get this 😍
 
 ```
