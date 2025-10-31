@@ -237,4 +237,4 @@ Beautiful Traceback is heavily inspired by the backtrace module by [nir0s](https
 
 ## License
 
-MIT License - see [LICENSE.md](LICENSE.md) for details.
+[MIT License](LICENSE.md)
