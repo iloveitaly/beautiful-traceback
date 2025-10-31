@@ -2,8 +2,6 @@
 Test for infinite loop bug with httpx.ConnectError and circular exception chains.
 """
 import pytest
-import sys
-from unittest.mock import Mock
 import beautiful_traceback
 
 
@@ -26,7 +24,6 @@ def test_httpx_connect_error_reproduction():
         raise MockConnectError("Connection failed")
     except MockConnectError as e:
         # Get the formatted traceback
-        import types
         tb_str = beautiful_traceback.formatting.exc_to_traceback_str(
             e, 
             e.__traceback__, 
@@ -64,7 +61,6 @@ def test_circular_exception_chain():
     exc2.__cause__ = exc1
     
     # This should not infinite loop
-    import types
     
     # Set a timeout to catch infinite loops
     import signal
