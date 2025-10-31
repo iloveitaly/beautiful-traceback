@@ -22,14 +22,14 @@ def _get_option(config: Config, key: str):
 def pytest_addoption(parser):
     parser.addini(
         "enable_beautiful_traceback",
-        "Enable the pretty traceback plugin",
+        "Enable the beautiful traceback plugin",
         type="bool",
         default=True,
     )
 
     parser.addini(
         "enable_beautiful_traceback_local_stack_only",
-        "Enable the pretty traceback plugin",
+        "Show only local code (filter out library/framework internals)",
         type="bool",
         default=True,
     )
@@ -51,11 +51,6 @@ def pytest_runtest_makereport(item, call):
     if _get_option(item.config, "enable_beautiful_traceback") and report.failed:
         value = call.excinfo.value
         tb = call.excinfo.tb
-
-        print(
-            "hello this is the value",
-            _get_option(item.config, "enable_beautiful_traceback_local_stack_only"),
-        )
 
         formatted_traceback = formatting.exc_to_traceback_str(
             value,
