@@ -17,7 +17,19 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: jdx/mise-action@v3
+      - uses: iloveitaly/github-action-direnv-load-and-mask@master
+      - run: uv sync
+      - name: Install jq for pyright reporting
+        run: sudo apt-get update && sudo apt-get install -y jq
+      - run: just lint
+  
   matrix-test:
+    needs: lint
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
