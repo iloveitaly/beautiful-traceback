@@ -131,14 +131,14 @@ def test_deeply_nested_exception_chain():
     exc = ValueError("Base error")
     try:
         raise exc
-    except Exception:
+    except:  # noqa: E722
         pass
 
     for i in range(100):
         new_exc = RuntimeError(f"Error {i}")
         try:
             raise new_exc from exc
-        except Exception:
+        except:  # noqa: E722
             pass
         exc = new_exc
 

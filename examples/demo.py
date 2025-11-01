@@ -95,7 +95,7 @@ def demo_nested_exception():
         try:
             settings = parse_config(invalid_json)
             return settings
-        except Exception:
+        except:  # noqa: E722
             # This will show both exceptions
             raise RuntimeError("Configuration loading failed")
 
