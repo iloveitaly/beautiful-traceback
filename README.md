@@ -3,9 +3,9 @@
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
 [![Python Versions](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 
-When you're debugging a production issue at 2am, the last thing you need is hunting through walls of text trying to find the actual error. Beautiful Traceback transforms Python's default exception output into something you can actually read—colored, formatted, and organized in a tabular layout that groups related information together.
+Beautiful Traceback transforms Python's default exception output into a readable tabular format with colors and better organization. Instead of hunting through walls of text, you get module names, function calls, line numbers, and code context grouped together in columns.
 
-This is a fork of [pretty-traceback](https://github.com/mbarkhau/pretty-traceback) with cleaner development setup and better integration for FastAPI, [structlog](https://github.com/iloveitaly/structlog-config), IPython, and pytest. I use it in [python-starter-template](https://github.com/iloveitaly/python-starter-template) to make debugging production issues less painful.
+This is a fork of [pretty-traceback](https://github.com/mbarkhau/pretty-traceback) with cleaner development setup and better integration for FastAPI, [structlog](https://github.com/iloveitaly/structlog-config), IPython, and pytest. Used in [python-starter-template](https://github.com/iloveitaly/python-starter-template).
 
 ![Comparison of standard Python traceback vs Beautiful Traceback](comparison.webp)
 
@@ -21,7 +21,7 @@ uv add beautiful-traceback
 pip install beautiful-traceback
 ```
 
-Want to try it first? Clone and run an example:
+To run an example:
 
 ```bash
 git clone https://github.com/iloveitaly/beautiful-traceback
@@ -41,9 +41,9 @@ except ImportError:
     pass
 ```
 
-Important: don't put this in `__init__.py` or any module others might import. Your users might not appreciate you messing with their traceback formatting.
+Don't add this to `__init__.py` or any module that others might import—it modifies global exception handling.
 
-If you really need to enable it in shared code, use the `envvar` gate:
+To enable it conditionally in shared code, use the `envvar` parameter:
 
 ```python
 try:
@@ -143,7 +143,7 @@ class MyFormatter(beautiful_traceback.LoggingFormatterMixin, logging.Formatter):
 
 ## Global Setup via PTH File
 
-Want beautiful tracebacks in every Python project without touching any code? Use a `.pth` file. Python executes import statements in `.pth` files at interpreter startup.
+To enable beautiful tracebacks globally across all Python projects, use a `.pth` file. Python executes import statements in `.pth` files at interpreter startup.
 
 Add this to `.zshrc` or `.bashrc`:
 
