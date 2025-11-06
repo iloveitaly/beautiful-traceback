@@ -183,5 +183,8 @@ Heavily inspired by [backtrace](https://github.com/nir0s/backtrace). Other simil
 - [frosch](https://github.com/HallerPatrick/frosch)
 - [pretty-traceback](https://github.com/mbarkhau/pretty-traceback)
 - [rich tracebacks](https://github.com/willmcgugan/rich#tracebacks)
+- [colored-traceback.py](https://github.com/staticshock/colored-traceback.py)
+- [ptb](https://github.com/chillaranand/ptb)
+- [rich-traceback](https://github.com/laurb9/rich-traceback)
 
 [MIT License](LICENSE.md)
