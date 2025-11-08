@@ -1,11 +1,13 @@
-# Beautiful Traceback
-
-> **Note:** This is a fork of the [pretty-traceback](https://github.com/mbarkhau/pretty-traceback) repo with simplified development and improvements for better integration with FastAPI, [structlog](https://github.com/iloveitaly/structlog-config), IPython, pytest, and more. This project is used in [python-starter-template](https://github.com/iloveitaly/python-starter-template) to provide better debugging experience in production environments.
-
-Human readable stacktraces for Python.
+# Beautiful, Readable Python Stack Traces
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
 [![Python Versions](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+
+> [!NOTE] This is a fork of the [pretty-traceback](https://github.com/mbarkhau/pretty-traceback) repo with simplified development and improvements for better integration with FastAPI, [structlog](https://github.com/iloveitaly/structlog-config), IPython, pytest, and more. This project is used in [python-starter-template](https://github.com/iloveitaly/python-starter-template) to provide better debugging experience in production environments.
+
+Human readable stacktraces for Python.
+
+![Comparison of standard Python traceback vs Beautiful Traceback](comparison.webp)
 
 ## Quick Start
 
@@ -22,7 +24,6 @@ uv run examples/simple.py
 
 Beautiful Traceback groups together what belongs together, adds coloring and alignment. All of this makes it easier for you to see patterns and filter out the signal from the noise. This tabular format is best viewed in a wide terminal.
 
-![Comparison of standard Python traceback vs Beautiful Traceback](comparison.webp)
 
 ## Installation
 
