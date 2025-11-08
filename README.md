@@ -5,7 +5,8 @@
 
 Beautiful Traceback transforms Python's default exception output into a readable tabular format with colors and better organization. Instead of hunting through walls of text, you get module names, function calls, line numbers, and code context grouped together in columns.
 
-This is a fork of [pretty-traceback](https://github.com/mbarkhau/pretty-traceback) with cleaner development setup and better integration for FastAPI, [structlog](https://github.com/iloveitaly/structlog-config), IPython, and pytest. Used in [python-starter-template](https://github.com/iloveitaly/python-starter-template).
+> [!NOTE]
+> This is a fork of [pretty-traceback](https://github.com/mbarkhau/pretty-traceback) with cleaner development setup and better integration for FastAPI, [structlog](https://github.com/iloveitaly/structlog-config), IPython, and pytest. Used in [python-starter-template](https://github.com/iloveitaly/python-starter-template).
 
 ![Comparison of standard Python traceback vs Beautiful Traceback](comparison.webp)
 
