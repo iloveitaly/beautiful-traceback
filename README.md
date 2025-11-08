@@ -3,11 +3,12 @@
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
 [![Python Versions](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 
-> [!NOTE] This is a fork of the [pretty-traceback](https://github.com/mbarkhau/pretty-traceback) repo with simplified development and improvements for better integration with FastAPI, [structlog](https://github.com/iloveitaly/structlog-config), IPython, pytest, and more. This project is used in [python-starter-template](https://github.com/iloveitaly/python-starter-template) to provide better debugging experience in production environments.
-
 Human readable stacktraces for Python.
 
 ![Comparison of standard Python traceback vs Beautiful Traceback](comparison.webp)
+
+> [!NOTE]
+> This is a fork of the [pretty-traceback](https://github.com/mbarkhau/pretty-traceback) repo with simplified development and improvements for better integration with FastAPI, [structlog](https://github.com/iloveitaly/structlog-config), IPython, pytest, and more. This project is used in [python-starter-template](https://github.com/iloveitaly/python-starter-template) to provide better debugging experience in production environments.
 
 ## Quick Start
 
