@@ -192,7 +192,27 @@ This gives you full control over the log format while adding beautiful traceback
 
 You can enable beautiful-traceback across all Python projects without modifying any source code by using a `.pth` file. Python automatically executes import statements in `.pth` files during interpreter startup, making this perfect for development environments.
 
-Add this function to your `.zshrc` or `.bashrc`:
+### Using the CLI Command
+
+The easiest way to inject beautiful-traceback into your current virtual environment:
+
+```bash
+beautiful-traceback
+```
+
+This command:
+- Only works within virtual environments (for safety)
+- Installs the `.pth` file into your current environment's site-packages
+- Displays the installation path every time it runs
+
+Output:
+```
+Beautiful traceback injection installed: /path/to/.venv/lib/python3.11/site-packages/beautiful_traceback_injection.pth
+```
+
+### Using a Shell Function (Alternative)
+
+Alternatively, add this function to your `.zshrc` or `.bashrc`:
 
 ```bash
 # Create a file to automatically import beautiful-traceback on startup
@@ -206,7 +226,7 @@ python-inject-beautiful-traceback() {
 def run_startup_script():
   try:
     import beautiful_traceback
-    beautiful_traceback.install()
+    beautiful_traceback.install(only_tty=False)
   except ImportError:
     pass
 
