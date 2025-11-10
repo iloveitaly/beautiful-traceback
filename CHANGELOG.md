@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.2.0](https://github.com/iloveitaly/beautiful-traceback/compare/v0.1.0...v0.2.0) (2025-11-10)
+
+
+### Features
+
+* implement PTH file injection ([#3](https://github.com/iloveitaly/beautiful-traceback/issues/3)) ([b4cb307](https://github.com/iloveitaly/beautiful-traceback/commit/b4cb307b85fdab95b3b2f6576793a55600bf4051))
+
+
+### Bug Fixes
+
+* format cli.py to pass linting checks ([#4](https://github.com/iloveitaly/beautiful-traceback/issues/4)) ([f6a1259](https://github.com/iloveitaly/beautiful-traceback/commit/f6a12598ac8b0d6e4d33849e4e825dd7ddd51877))
+
+
+### Documentation
+
+* Refactor README content for better readability ([e8ab686](https://github.com/iloveitaly/beautiful-traceback/commit/e8ab686c78f4ebdd22a2e583bfc8b947a834489b))
+* Revise README for better readability and structure ([8014d11](https://github.com/iloveitaly/beautiful-traceback/commit/8014d11410728ed701a85f694a69869f52525092))
+* update license link format in README.md ([8ae4d1d](https://github.com/iloveitaly/beautiful-traceback/commit/8ae4d1df69b679abdd10b4d3aa71afbb1c68c13c))
+
 ## 0.1.0 (2025-10-31)
 
 
