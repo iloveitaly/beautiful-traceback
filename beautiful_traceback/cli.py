@@ -13,7 +13,10 @@ def inject_pth() -> None:
     """
     if not _is_in_venv():
         print("Error: Not running in a virtual environment", file=sys.stderr)
-        print("Beautiful traceback pth injection only works in virtual environments", file=sys.stderr)
+        print(
+            "Beautiful traceback pth injection only works in virtual environments",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     site_packages = _get_site_packages()
