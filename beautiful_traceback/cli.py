@@ -56,11 +56,7 @@ def _create_injection_files(py_file: Path, pth_file: Path) -> None:
     if py_file.exists() or pth_file.exists():
         colorama.init()
         try:
-            warning_msg = (
-                colorama.Fore.RED
-                + "Warning: Beautiful traceback injection already exists. Overwriting..."
-                + colorama.Style.RESET_ALL
-            )
+            warning_msg = f"{colorama.Fore.RED}Warning: Beautiful traceback injection already exists. Overwriting...{colorama.Style.RESET_ALL}"
             print(warning_msg, file=sys.stderr)
         finally:
             colorama.deinit()
