@@ -3,6 +3,8 @@
 import sys
 from pathlib import Path
 
+import colorama
+
 
 def inject_pth() -> None:
     """
@@ -50,6 +52,15 @@ def _get_site_packages() -> Path:
 
 def _create_injection_files(py_file: Path, pth_file: Path) -> None:
     """Create the Python injection file and .pth file."""
+    # Check if files already exist
+    if py_file.exists() or pth_file.exists():
+        colorama.init()
+        try:
+            warning_msg = f"{colorama.Fore.RED}Warning: Beautiful traceback injection already exists. Overwriting...{colorama.Style.RESET_ALL}"
+            print(warning_msg, file=sys.stderr)
+        finally:
+            colorama.deinit()
+
     py_content = """def run_startup_script():
   try:
     import beautiful_traceback
