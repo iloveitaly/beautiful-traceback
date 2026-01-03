@@ -54,19 +54,12 @@ def _create_injection_files(py_file: Path, pth_file: Path) -> None:
     """Create the Python injection file and .pth file."""
     # Check if files already exist
     if py_file.exists() or pth_file.exists():
-        # Use colored warning if stderr is a TTY
-        if sys.stderr.isatty():
-            colorama.init()
-            try:
-                warning_msg = f"{colorama.Fore.RED}Warning: Beautiful traceback injection already exists. Overwriting...{colorama.Style.RESET_ALL}"
-                print(warning_msg, file=sys.stderr)
-            finally:
-                colorama.deinit()
-        else:
-            print(
-                "Warning: Beautiful traceback injection already exists. Overwriting...",
-                file=sys.stderr,
-            )
+        colorama.init()
+        try:
+            warning_msg = f"{colorama.Fore.RED}Warning: Beautiful traceback injection already exists. Overwriting...{colorama.Style.RESET_ALL}"
+            print(warning_msg, file=sys.stderr)
+        finally:
+            colorama.deinit()
 
     py_content = """def run_startup_script():
   try:
