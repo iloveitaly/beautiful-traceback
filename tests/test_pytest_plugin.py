@@ -145,14 +145,23 @@ def test_exception_message_override_for_assertions():
         assert "assert 1 == 2" in tb_str
 
 
-def test_exception_message_override_ignores_standard_message():
+@pytest.mark.parametrize(
+    ("exc_type", "message"),
+    [
+        (ValueError, "Test error message"),
+        (KeyError, "missing key"),
+        (TypeError, "bad type"),
+        (AttributeError, "missing attribute"),
+    ],
+)
+def test_exception_message_override_ignores_standard_message(exc_type, message):
     """Test that standard exception messages do not override."""
     try:
-        raise ValueError("Test error message")
-    except ValueError:
+        raise exc_type(message)
+    except Exception:
         excinfo = pytest.ExceptionInfo.from_current()
-        message = pytest_plugin._get_exception_message_override(excinfo)
-        assert message is None
+        message_override = pytest_plugin._get_exception_message_override(excinfo)
+        assert message_override is None
 
 
 def test_chained_exceptions_in_formatting():
