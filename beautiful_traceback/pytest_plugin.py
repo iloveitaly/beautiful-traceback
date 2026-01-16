@@ -19,6 +19,43 @@ def _get_option(config: Config, key: str):
     return val
 
 
+def _get_exception_message_override(excinfo: pytest.ExceptionInfo) -> str | None:
+    """Return pytest's verbose exception message when rewriting adds detail.
+
+    The plugin overrides pytest's longrepr rendering, which skips the
+    ExceptionInfo repr where pytest stores rewritten assertion diffs. Without
+    this, AssertionError messages collapse to str(exc) and omit left/right
+    details. Pulling reprcrash.message preserves that verbose message when
+    pytest provides one.
+    """
+    try:
+        repr_info = excinfo.getrepr(style="long")
+    except Exception:
+        return None
+
+    reprcrash = getattr(repr_info, "reprcrash", None)
+    if reprcrash is None:
+        return None
+
+    message = getattr(reprcrash, "message", None)
+    if not message:
+        return None
+
+    exc_name = type(excinfo.value).__name__
+    prefix = f"{exc_name}: "
+    if message.startswith(prefix):
+        message = message.removeprefix(prefix)
+
+    if not message or message == exc_name:
+        return None
+
+    exc_message = str(excinfo.value)
+    if message == exc_message:
+        return None
+
+    return message
+
+
 def pytest_addoption(parser):
     parser.addini(
         "enable_beautiful_traceback",
@@ -52,6 +89,8 @@ def pytest_runtest_makereport(item, call):
         value = call.excinfo.value
         tb = call.excinfo.tb
 
+        message_override = _get_exception_message_override(call.excinfo)
+
         formatted_traceback = formatting.exc_to_traceback_str(
             value,
             tb,
@@ -59,6 +98,7 @@ def pytest_runtest_makereport(item, call):
             local_stack_only=_get_option(
                 item.config, "enable_beautiful_traceback_local_stack_only"
             ),
+            exc_msg_override=message_override,
         )
         report.longrepr = formatted_traceback
 
@@ -72,6 +112,8 @@ def pytest_exception_interact(node, call, report):
     if report.failed:
         value = call.excinfo.value
         tb = call.excinfo.tb
+        message_override = _get_exception_message_override(call.excinfo)
+
         formatted_traceback = formatting.exc_to_traceback_str(
             value,
             tb,
@@ -79,5 +121,6 @@ def pytest_exception_interact(node, call, report):
             local_stack_only=_get_option(
                 node.config, "enable_beautiful_traceback_local_stack_only"
             ),
+            exc_msg_override=message_override,
         )
         report.longrepr = formatted_traceback

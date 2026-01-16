@@ -452,6 +452,7 @@ def exc_to_traceback_str(
     traceback: types.TracebackType,
     color: bool = False,
     local_stack_only: bool = False,
+    exc_msg_override: str | None = None,
 ) -> str:
     # NOTE (mb 2020-08-13): wrt. cause vs context see
     #   https://www.python.org/dev/peps/pep-3134/#enhanced-reporting
@@ -475,9 +476,13 @@ def exc_to_traceback_str(
         next_cause = getattr(cur_exc_value, "__cause__", None)
         next_context = getattr(cur_exc_value, "__context__", None)
 
+        exc_msg = str(cur_exc_value)
+        if exc_msg_override is not None and cur_exc_value is exc_value:
+            exc_msg = exc_msg_override
+
         tb_tup = com.Traceback(
             exc_name=type(cur_exc_value).__name__,
-            exc_msg=str(cur_exc_value),
+            exc_msg=exc_msg,
             entries=list(_traceback_to_entries(cur_traceback)),
             is_caused=bool(next_cause),
             is_context=bool(next_context),

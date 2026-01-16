@@ -125,6 +125,45 @@ def test_formatting_with_color():
         assert "TypeError" in tb_str_no_color
 
 
+def test_exception_message_override_for_assertions():
+    """Test that assertion errors include verbose messages."""
+    try:
+        assert 1 == 2
+    except AssertionError:
+        excinfo = pytest.ExceptionInfo.from_current()
+        message = pytest_plugin._get_exception_message_override(excinfo)
+        assert message is not None
+
+        tb_str = formatting.exc_to_traceback_str(
+            excinfo.value,
+            excinfo.tb,
+            color=False,
+            local_stack_only=False,
+            exc_msg_override=message,
+        )
+
+        assert "assert 1 == 2" in tb_str
+
+
+@pytest.mark.parametrize(
+    ("exc_type", "message"),
+    [
+        (ValueError, "Test error message"),
+        (KeyError, "missing key"),
+        (TypeError, "bad type"),
+        (AttributeError, "missing attribute"),
+    ],
+)
+def test_exception_message_override_ignores_standard_message(exc_type, message):
+    """Test that standard exception messages do not override."""
+    try:
+        raise exc_type(message)
+    except exc_type:
+        excinfo = pytest.ExceptionInfo.from_current()
+        message_override = pytest_plugin._get_exception_message_override(excinfo)
+        assert message_override is None
+
+
 def test_chained_exceptions_in_formatting():
     """Test that chained exceptions are formatted correctly."""
     try:
