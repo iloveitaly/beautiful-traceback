@@ -38,6 +38,8 @@ def _get_exception_message_override(excinfo: pytest.ExceptionInfo) -> str | None
         chain = getattr(repr_info, "chain", None)
         if chain:
             for chain_entry in reversed(chain):
+                if not chain_entry:
+                    continue
                 reprcrash = getattr(chain_entry[0], "reprcrash", None)
                 if reprcrash is not None:
                     break
