@@ -38,7 +38,7 @@ def _get_exception_message_override(excinfo: pytest.ExceptionInfo) -> str | None
         chain = getattr(repr_info, "chain", None)
         if chain:
             for chain_entry in reversed(chain):
-                if not isinstance(chain_entry, (list, tuple)) or not chain_entry:
+                if not isinstance(chain_entry, (list, tuple)) or len(chain_entry) < 1:
                     continue
                 repr_exception = chain_entry[0]
                 if not hasattr(repr_exception, "reprcrash"):
