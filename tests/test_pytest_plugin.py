@@ -158,7 +158,7 @@ def test_exception_message_override_ignores_standard_message(exc_type, message):
     """Test that standard exception messages do not override."""
     try:
         raise exc_type(message)
-    except Exception:
+    except exc_type:
         excinfo = pytest.ExceptionInfo.from_current()
         message_override = pytest_plugin._get_exception_message_override(excinfo)
         assert message_override is None
