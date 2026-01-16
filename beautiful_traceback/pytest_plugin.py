@@ -20,6 +20,14 @@ def _get_option(config: Config, key: str):
 
 
 def _get_exception_message_override(excinfo: pytest.ExceptionInfo) -> str | None:
+    """Return pytest's verbose exception message when rewriting adds detail.
+
+    The plugin overrides pytest's longrepr rendering, which skips the
+    ExceptionInfo repr where pytest stores rewritten assertion diffs. Without
+    this, AssertionError messages collapse to str(exc) and omit left/right
+    details. Pulling reprcrash.message preserves that verbose message when
+    pytest provides one.
+    """
     try:
         repr_info = excinfo.getrepr(style="long")
     except Exception:
