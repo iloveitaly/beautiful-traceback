@@ -19,6 +19,29 @@ def _get_option(config: Config, key: str):
     return val
 
 
+def _get_assertion_message(excinfo: pytest.ExceptionInfo) -> str | None:
+    try:
+        repr_info = excinfo.getrepr(style="long")
+    except Exception:
+        return None
+
+    reprcrash = getattr(repr_info, "reprcrash", None)
+    if reprcrash is None:
+        return None
+
+    message = getattr(reprcrash, "message", None)
+    if not message:
+        return None
+
+    if message.startswith("AssertionError: "):
+        message = message.removeprefix("AssertionError: ")
+
+    if message == "AssertionError":
+        return None
+
+    return message
+
+
 def pytest_addoption(parser):
     parser.addini(
         "enable_beautiful_traceback",
@@ -52,6 +75,10 @@ def pytest_runtest_makereport(item, call):
         value = call.excinfo.value
         tb = call.excinfo.tb
 
+        assertion_message = None
+        if isinstance(value, AssertionError):
+            assertion_message = _get_assertion_message(call.excinfo)
+
         formatted_traceback = formatting.exc_to_traceback_str(
             value,
             tb,
@@ -59,6 +86,7 @@ def pytest_runtest_makereport(item, call):
             local_stack_only=_get_option(
                 item.config, "enable_beautiful_traceback_local_stack_only"
             ),
+            exc_msg_override=assertion_message,
         )
         report.longrepr = formatted_traceback
 
@@ -72,6 +100,10 @@ def pytest_exception_interact(node, call, report):
     if report.failed:
         value = call.excinfo.value
         tb = call.excinfo.tb
+        assertion_message = None
+        if isinstance(value, AssertionError):
+            assertion_message = _get_assertion_message(call.excinfo)
+
         formatted_traceback = formatting.exc_to_traceback_str(
             value,
             tb,
@@ -79,5 +111,6 @@ def pytest_exception_interact(node, call, report):
             local_stack_only=_get_option(
                 node.config, "enable_beautiful_traceback_local_stack_only"
             ),
+            exc_msg_override=assertion_message,
         )
         report.longrepr = formatted_traceback
