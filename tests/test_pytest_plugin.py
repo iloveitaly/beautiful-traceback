@@ -125,13 +125,13 @@ def test_formatting_with_color():
         assert "TypeError" in tb_str_no_color
 
 
-def test_assertion_error_message_override():
+def test_exception_message_override_for_assertions():
     """Test that assertion errors include verbose messages."""
     try:
         assert 1 == 2
     except AssertionError:
         excinfo = pytest.ExceptionInfo.from_current()
-        message = pytest_plugin._get_assertion_message(excinfo)
+        message = pytest_plugin._get_exception_message_override(excinfo)
         assert message is not None
 
         tb_str = formatting.exc_to_traceback_str(
@@ -143,6 +143,16 @@ def test_assertion_error_message_override():
         )
 
         assert "assert 1 == 2" in tb_str
+
+
+def test_exception_message_override_ignores_standard_message():
+    """Test that standard exception messages do not override."""
+    try:
+        raise ValueError("Test error message")
+    except ValueError:
+        excinfo = pytest.ExceptionInfo.from_current()
+        message = pytest_plugin._get_exception_message_override(excinfo)
+        assert message is None
 
 
 def test_chained_exceptions_in_formatting():
