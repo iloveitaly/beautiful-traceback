@@ -1,7 +1,7 @@
 # Beautiful, Readable Python Stack Traces
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
-[![Python Versions](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Python Versions](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
 Human readable stacktraces for Python.
 
