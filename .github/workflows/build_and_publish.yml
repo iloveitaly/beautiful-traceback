@@ -4,6 +4,10 @@ on:
     branches:
       - main
       - master
+  pull_request:
+    branches:
+      - main
+      - master
 
 permissions:
   contents: write
@@ -46,6 +50,7 @@ jobs:
   release-please:
     needs: matrix-test
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
     steps:
@@ -59,7 +64,7 @@ jobs:
   build-and-publish:
     needs: release-please
     runs-on: ubuntu-latest
-    if: ${{ needs.release-please.outputs.release_created }}
+    if: ${{ github.event_name == 'push' && needs.release-please.outputs.release_created }}
     permissions:
       id-token: write
       contents: read
