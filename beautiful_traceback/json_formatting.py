@@ -190,7 +190,9 @@ def _exc_to_traceback_list(
             next_tb = next_exc.__traceback__
             is_caused = True
             is_context = False
-        elif current_exc.__context__ is not None and not current_exc.__suppress_context__:
+        elif (
+            current_exc.__context__ is not None and not current_exc.__suppress_context__
+        ):
             next_exc = current_exc.__context__
             next_tb = next_exc.__traceback__
             is_caused = False
