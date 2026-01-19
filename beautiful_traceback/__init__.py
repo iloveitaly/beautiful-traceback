@@ -10,7 +10,6 @@ LoggingFormaterMixin = LoggingFormatterMixin
 __all__ = [
     "install",
     "uninstall",
-    "__version__",
     "LoggingFormatter",
     "LoggingFormatterMixin",
     "LoggingFormaterMixin",
