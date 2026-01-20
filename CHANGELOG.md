@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/iloveitaly/beautiful-traceback/compare/v0.2.0...v0.3.0) (2026-01-20)
+
+
+### Features
+
+* **json_formatting:** add exc_to_json for structured error logging ([7c850d0](https://github.com/iloveitaly/beautiful-traceback/commit/7c850d08a5e4a18eea5f73a3b4d25340a5b4fd07))
+
+
+### Documentation
+
+* **examples:** add json and fastapi demos for exc_to_json ([5c1fcc0](https://github.com/iloveitaly/beautiful-traceback/commit/5c1fcc066cfba25a03d64736f91e613e2ff31569))
+
 ## [0.2.0](https://github.com/iloveitaly/beautiful-traceback/compare/v0.1.0...v0.2.0) (2025-11-10)
 
 
