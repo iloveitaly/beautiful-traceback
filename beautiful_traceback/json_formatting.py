@@ -7,7 +7,7 @@ dictionaries suitable for JSON logging in production environments.
 import types
 import typing as typ
 
-import beautiful_traceback.common as com
+from beautiful_traceback.common import ExceptionTraceback, ExceptionTracebackList
 import beautiful_traceback.formatting as fmt
 
 
@@ -103,7 +103,7 @@ def exc_to_json(
         }
 
     main_tb = tracebacks[0]
-    entries = list(main_tb.entries)
+    entries = list(main_tb.stack_frames)
 
     if not entries:
         result = {
@@ -123,7 +123,7 @@ def exc_to_json(
     if len(tracebacks) > 1:
         chain = []
         for tb in tracebacks[1:]:
-            entries = list(tb.entries)
+            entries = list(tb.stack_frames)
             if not entries:
                 chain_item = {
                     "exception": tb.exc_name,
@@ -150,12 +150,12 @@ def exc_to_json(
 def _exc_to_traceback_list(
     exc_value: BaseException,
     traceback: types.TracebackType | None,
-) -> list[com.Traceback]:
+) -> ExceptionTracebackList:
     """Convert exception with chaining to a list of Traceback objects.
 
     Handles __cause__ and __context__ chains, detecting circular references.
     """
-    tracebacks: list[com.Traceback] = []
+    tracebacks: ExceptionTracebackList = []
     seen_exceptions: set[int] = set()
 
     current_exc = exc_value
@@ -173,10 +173,10 @@ def _exc_to_traceback_list(
 
         entries = fmt._traceback_to_entries(current_tb) if current_tb else []
 
-        tb_obj = com.Traceback(
+        tb_obj = ExceptionTraceback(
             exc_name=type(current_exc).__name__,
             exc_msg=str(current_exc),
-            entries=entries,
+            stack_frames=entries,
             is_caused=is_caused,
             is_context=is_context,
         )

@@ -1,7 +1,14 @@
 import re
 import typing as typ
 
-import beautiful_traceback.common as com
+from beautiful_traceback.common import (
+    CAUSE_HEAD,
+    CONTEXT_HEAD,
+    TRACEBACK_HEAD,
+    ExceptionTraceback,
+    ExceptionTracebackList,
+    StackFrameEntry,
+)
 
 # TODO (mb 2020-08-12): path/module with doublequotes in them.
 #   Not even sure what python does with that.
@@ -20,7 +27,7 @@ File
 LOCATION_RE = re.compile(LOCATION_PATTERN, flags=re.VERBOSE)
 
 
-def _parse_entries(entry_lines: typ.List[str]) -> typ.Iterable[com.Entry]:
+def _parse_entries(entry_lines: typ.List[str]) -> typ.Iterable[StackFrameEntry]:
     i = 0
     while i < len(entry_lines):
         line = entry_lines[i]
@@ -43,13 +50,13 @@ def _parse_entries(entry_lines: typ.List[str]) -> typ.Iterable[com.Entry]:
 
         module, lineno, call = loc_match.groups()
 
-        yield com.Entry(module, call, lineno, src_ctx)
+        yield StackFrameEntry(module, call, lineno, src_ctx)
 
 
-TRACE_HEADERS = {com.TRACEBACK_HEAD, com.CAUSE_HEAD, com.CONTEXT_HEAD}
+TRACE_HEADERS = {TRACEBACK_HEAD, CAUSE_HEAD, CONTEXT_HEAD}
 
 
-def _iter_tracebacks(trace: str) -> typ.Iterable[com.Traceback]:
+def _iter_tracebacks(trace: str) -> typ.Iterable[ExceptionTraceback]:
     lines = trace.strip().splitlines()
 
     i = 0
@@ -64,17 +71,17 @@ def _iter_tracebacks(trace: str) -> typ.Iterable[com.Traceback]:
         is_caused = False
         is_context = False
 
-        if line.startswith(com.CAUSE_HEAD):
+        if line.startswith(CAUSE_HEAD):
             is_caused = True
             i += 1
-        elif line.startswith(com.CONTEXT_HEAD):
+        elif line.startswith(CONTEXT_HEAD):
             is_context = True
             i += 1
 
         # skip empty lines and tb head
         while i < len(lines):
             line = lines[i].strip()
-            if not line or line.startswith(com.TRACEBACK_HEAD):
+            if not line or line.startswith(TRACEBACK_HEAD):
                 i += 1
             else:
                 break
@@ -93,10 +100,10 @@ def _iter_tracebacks(trace: str) -> typ.Iterable[com.Traceback]:
             exc_msg = ""
 
         entries = list(_parse_entries(entry_lines))
-        yield com.Traceback(
+        yield ExceptionTraceback(
             exc_name=exc_name,
             exc_msg=exc_msg,
-            entries=entries,
+            stack_frames=entries,
             is_caused=is_caused,
             is_context=is_context,
         )
@@ -104,7 +111,7 @@ def _iter_tracebacks(trace: str) -> typ.Iterable[com.Traceback]:
         i += 1
 
 
-def parse_tracebacks(trace: str) -> com.Tracebacks:
+def parse_tracebacks(trace: str) -> ExceptionTracebackList:
     """Parses a chain of tracebacks.
 
     Args:

@@ -10,7 +10,15 @@ import collections
 
 import colorama
 
-import beautiful_traceback.common as com
+from beautiful_traceback.common import (
+    ALIASES_HEAD,
+    CAUSE_HEAD,
+    CONTEXT_HEAD,
+    TRACEBACK_HEAD,
+    ExceptionTraceback,
+    StackFrameEntry,
+    StackFrameEntryList,
+)
 
 DEFAULT_COLUMNS = 80
 
@@ -103,7 +111,7 @@ class Context(typ.NamedTuple):
     max_context_len: int
 
 
-def _iter_entry_paths(entries: com.Entries) -> typ.Iterable[str]:
+def _iter_entry_paths(entries: StackFrameEntryList) -> typ.Iterable[str]:
     for entry in entries:
         module_abspath = os.path.abspath(entry.module)
         is_valid_abspath = module_abspath != entry.module and os.path.exists(
@@ -184,7 +192,7 @@ def _iter_alias_prefixes(entry_paths: typ.List[str]) -> typ.Iterable[AliasPrefix
 
 
 def _iter_entry_rows(
-    aliases: AliasPrefixes, entry_paths: typ.List[str], entries: com.Entries
+    aliases: AliasPrefixes, entry_paths: typ.List[str], entries: StackFrameEntryList
 ) -> typ.Iterable[Row]:
     for abs_module, entry in zip(entry_paths, entries):
         used_alias = ""
@@ -219,7 +227,7 @@ def _iter_entry_rows(
 
 
 def _init_entries_context(
-    entries: com.Entries, term_width: typ.Optional[int] = None
+    entries: StackFrameEntryList, term_width: typ.Optional[int] = None
 ) -> Context:
     if term_width is None:
         _term_width = _get_terminal_width()
@@ -361,19 +369,21 @@ def _rows_to_lines(
             yield line
 
 
-def _traceback_to_entries(traceback: types.TracebackType) -> typ.Iterable[com.Entry]:
+def _traceback_to_entries(traceback: types.TracebackType) -> StackFrameEntryList:
     summary = tb.extract_tb(traceback)
+    entries = []
     for entry in summary:
         module = entry[0]
         call = entry[2]
         lineno = str(entry[1])
         context = entry[3] or ""
-        yield com.Entry(module, call, lineno, context)
+        entries.append(StackFrameEntry(module, call, lineno, context))
+    return entries
 
 
 def _format_traceback(
     ctx: Context,
-    traceback: com.Traceback,
+    traceback: ExceptionTraceback,
     color: bool = False,
     local_stack_only: bool = False,
 ) -> str:
@@ -381,10 +391,10 @@ def _format_traceback(
 
     lines = []
     if ctx.aliases and not ctx.is_wide_mode:
-        lines.append(com.ALIASES_HEAD)
+        lines.append(ALIASES_HEAD)
         lines.extend(_aliases_to_lines(ctx, color))
 
-    lines.append(com.TRACEBACK_HEAD)
+    lines.append(TRACEBACK_HEAD)
     lines.extend(_rows_to_lines(padded_rows, color, local_stack_only))
 
     if traceback.exc_name == "RecursionError" and len(lines) > 100:
@@ -416,14 +426,14 @@ def _format_traceback(
 
 
 def format_traceback(
-    traceback: com.Traceback, color: bool = False, local_stack_only: bool = False
+    traceback: ExceptionTraceback, color: bool = False, local_stack_only: bool = False
 ) -> str:
-    ctx = _init_entries_context(traceback.entries)
+    ctx = _init_entries_context(traceback.stack_frames)
     return _format_traceback(ctx, traceback, color, local_stack_only)
 
 
 def format_tracebacks(
-    tracebacks: typ.List[com.Traceback],
+    tracebacks: typ.List[ExceptionTraceback],
     color: bool = False,
     local_stack_only: bool = False,
 ) -> str:
@@ -432,10 +442,10 @@ def format_tracebacks(
     for tb_tup in tracebacks:
         if tb_tup.is_caused:
             # traceback_strs.append("vvv caused by ^^^ - ")
-            traceback_strs.append(com.CAUSE_HEAD + os.linesep)
+            traceback_strs.append(CAUSE_HEAD + os.linesep)
         elif tb_tup.is_context:
             # traceback_strs.append("vvv happend after ^^^ - ")
-            traceback_strs.append(com.CONTEXT_HEAD + os.linesep)
+            traceback_strs.append(CONTEXT_HEAD + os.linesep)
 
         traceback_str = format_traceback(tb_tup, color, local_stack_only)
         traceback_strs.append(traceback_str)
@@ -457,7 +467,7 @@ def exc_to_traceback_str(
     # NOTE (mb 2020-08-13): wrt. cause vs context see
     #   https://www.python.org/dev/peps/pep-3134/#enhanced-reporting
     #   https://stackoverflow.com/questions/11235932/
-    tracebacks: typ.List[com.Traceback] = []
+    tracebacks: typ.List[ExceptionTraceback] = []
 
     cur_exc_value: BaseException = exc_value
     cur_traceback: types.TracebackType = traceback
@@ -480,10 +490,10 @@ def exc_to_traceback_str(
         if exc_msg_override is not None and cur_exc_value is exc_value:
             exc_msg = exc_msg_override
 
-        tb_tup = com.Traceback(
+        tb_tup = ExceptionTraceback(
             exc_name=type(cur_exc_value).__name__,
             exc_msg=exc_msg,
-            entries=list(_traceback_to_entries(cur_traceback)),
+            stack_frames=_traceback_to_entries(cur_traceback),
             is_caused=bool(next_cause),
             is_context=bool(next_context),
         )
