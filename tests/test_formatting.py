@@ -25,7 +25,7 @@ import tests.fixtures
 
 import pytest
 
-from beautiful_traceback import common
+from beautiful_traceback.common import TRACEBACK_HEAD
 from beautiful_traceback import parsing
 from beautiful_traceback import formatting
 
@@ -74,13 +74,13 @@ def test_formatting_basic():
         tracebacks = parsing.parse_tracebacks(trace_str)
         for traceback in tracebacks:
             tb_str = formatting.format_traceback(traceback)
-            tb_entries_str = tb_str.split(common.TRACEBACK_HEAD)[-1]
+            tb_entries_str = tb_str.split(TRACEBACK_HEAD)[-1]
             tb_entry_lines = tb_entries_str.splitlines()
             assert traceback.exc_name in tb_entry_lines[-1]
             assert traceback.exc_msg in tb_entry_lines[-1]
             entry_lines = [line for line in tb_entry_lines if line.startswith("    ")]
-            assert len(entry_lines) == len(traceback.entries)
-            for line, entry in zip(entry_lines, traceback.entries):
+            assert len(entry_lines) == len(traceback.stack_frames)
+            for line, entry in zip(entry_lines, traceback.stack_frames):
                 assert entry.lineno in line
                 assert entry.src_ctx in line
                 assert entry.call in line
@@ -101,12 +101,14 @@ FORMATTING_TEST_CASES = [
 def test_formatting(fixture_index, term_width, pathsep_re, env_setup):
     trace_str = tests.fixtures.ALL_TRACEBACK_STRS[fixture_index]
     for traceback in parsing.parse_tracebacks(trace_str):
-        ctx = formatting._init_entries_context(traceback.entries, term_width=term_width)
+        ctx = formatting._init_entries_context(
+            traceback.stack_frames, term_width=term_width
+        )
         tb_str = formatting._format_traceback(ctx, traceback)
 
         pathsep_offsets = []
 
-        tb_lines = tb_str.split(common.TRACEBACK_HEAD)[-1].strip("\n").splitlines()[:-1]
+        tb_lines = tb_str.split(TRACEBACK_HEAD)[-1].strip("\n").splitlines()[:-1]
         for line in tb_lines:
             assert line.startswith("    "), repr(line)
 

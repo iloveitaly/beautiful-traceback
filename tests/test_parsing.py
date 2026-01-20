@@ -16,9 +16,11 @@ def _validate_traceback(tb_result, tb_expect):
     assert tb_result.is_caused == tb_expect.is_caused
     assert tb_result.is_context == tb_expect.is_context
 
-    assert len(tb_result.entries) == len(tb_expect.entries)
+    assert len(tb_result.stack_frames) == len(tb_expect.stack_frames)
 
-    for result_entry, expect_entry in zip(tb_result.entries, tb_expect.entries):
+    for result_entry, expect_entry in zip(
+        tb_result.stack_frames, tb_expect.stack_frames
+    ):
         assert result_entry.module == expect_entry.module
         assert result_entry.call == expect_entry.call
         assert result_entry.lineno == expect_entry.lineno

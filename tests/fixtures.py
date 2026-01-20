@@ -4,7 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import beautiful_traceback.common as com
+from beautiful_traceback.common import ExceptionTraceback, StackFrameEntry
 
 BASIC_TRACEBACK_STR = """
 Traceback (most recent call last):
@@ -38,79 +38,79 @@ TypeError: no loader for this environment specified
 
 
 BASIC_TRACEBACK_ENTRIES = [
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/venvs/py38/bin/myproject",
         call="<module>",
         lineno="12",
         src_ctx="sys.exit(cli())",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/venvs/py38/lib/python3.8/site-packages/click/core.py",
         call="__call__",
         lineno="829",
         src_ctx="return self.main(*args, **kwargs)",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/venvs/py38/lib/python3.8/site-packages/click/core.py",
         call="main",
         lineno="782",
         src_ctx="rv = self.invoke(ctx)",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/venvs/py38/lib/python3.8/site-packages/click/core.py",
         call="invoke",
         lineno="1259",
         src_ctx="return _process_result(sub_ctx.command.invoke(sub_ctx))",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/venvs/py38/lib/python3.8/site-packages/click/core.py",
         call="invoke",
         lineno="1066",
         src_ctx="return ctx.invoke(self.callback, **ctx.params)",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/venvs/py38/lib/python3.8/site-packages/click/core.py",
         call="invoke",
         lineno="610",
         src_ctx="return callback(*args, **kwargs)",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/foss/myproject/src/myproject/cli.py",
         call="build",
         lineno="148",
         src_ctx="lp_gen_docs.gen_html(built_ctx, html_dir)",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/foss/myproject/src/myproject/gen_docs.py",
         call="gen_html",
         lineno="295",
         src_ctx="wrapped_html = wrap_content_html(content_html, 'screen', meta, toc)",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/foss/myproject/src/myproject/gen_docs.py",
         call="wrap_content_html",
         lineno="238",
         src_ctx="result = tmpl.render(**ctx)",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/venvs/py38/lib/python3.8/site-packages/jinja2/environment.py",
         call="render",
         lineno="1090",
         src_ctx="self.environment.handle_exception()",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/venvs/py38/lib/python3.8/site-packages/jinja2/environment.py",
         call="handle_exce",
         lineno="832",
         src_ctx="reraise(*rewrite_traceback_stack(source=source))",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/venvs/py38/lib/python3.8/site-packages/jinja2/_compat.py",
         call="reraise",
         lineno="28",
         src_ctx="raise value.with_traceback(tb)",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="<template>",
         call="top-level template code",
         lineno="56",
@@ -119,10 +119,10 @@ BASIC_TRACEBACK_ENTRIES = [
 ]
 
 
-BASIC_TRACEBACK = com.Traceback(
+BASIC_TRACEBACK = ExceptionTraceback(
     exc_name="TypeError",
     exc_msg="no loader for this environment specified",
-    entries=BASIC_TRACEBACK_ENTRIES,
+    stack_frames=BASIC_TRACEBACK_ENTRIES,
     is_caused=False,
     is_context=False,
 )
@@ -221,31 +221,31 @@ KeyError: Wrapping KeyError
 
 
 CHAINED_TRACEBACK_ENTRIES_0 = [
-    com.Entry(
+    StackFrameEntry(
         module="./test/test_formatting.py",
         call="_ping",
         lineno="30",
         src_ctx="sp.check_output(['command_that', 'doesnt', 'exist'])",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/envs/py38/lib/python3.8/subprocess.py",
         call="check_output",
         lineno="411",
         src_ctx="return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/envs/py38/lib/python3.8/subprocess.py",
         call="run",
         lineno="489",
         src_ctx="with Popen(*popenargs, **kwargs) as process:",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/envs/py38/lib/python3.8/subprocess.py",
         call="__init__",
         lineno="854",
         src_ctx="self._execute_child(args, executable, preexec_fn, close_fds,",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/envs/py38/lib/python3.8/subprocess.py",
         call="_execute_child",
         lineno="1702",
@@ -255,7 +255,7 @@ CHAINED_TRACEBACK_ENTRIES_0 = [
 
 
 CHAINED_TRACEBACK_ENTRIES_1 = [
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/project/test/test_formatting.py",
         call="_ping",
         lineno="35",
@@ -265,55 +265,55 @@ CHAINED_TRACEBACK_ENTRIES_1 = [
 
 
 CHAINED_TRACEBACK_ENTRIES_2 = [
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/project/test/test_formatting.py",
         call="<module>",
         lineno="70",
         src_ctx="run_pingpong()",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/project/test/test_formatting.py",
         call="run_pingpong",
         lineno="56",
         src_ctx="sched3.run()",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/envs/py38/lib/python3.8/sched.py",
         call="run",
         lineno="151",
         src_ctx="action(*argument, **kwargs)",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/envs/py38/lib/python3.8/sched.py",
         call="run",
         lineno="151",
         src_ctx="action(*argument, **kwargs)",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/envs/py38/lib/python3.8/sched.py",
         call="run",
         lineno="151",
         src_ctx="action(*argument, **kwargs)",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/project/test/test_formatting.py",
         call="_ping",
         lineno="46",
         src_ctx="_pong(depth + 1)",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/project/test/test_formatting.py",
         call="_pong",
         lineno="24",
         src_ctx="_ping(depth + 1)",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/project/test/test_formatting.py",
         call="_ping",
         lineno="42",
         src_ctx="raise new_ex",
     ),
-    com.Entry(
+    StackFrameEntry(
         module="/home/user/project/test/test_formatting.py",
         call="_ping",
         lineno="33",
@@ -323,24 +323,24 @@ CHAINED_TRACEBACK_ENTRIES_2 = [
 
 
 CHAINED_TRACEBACK = [
-    com.Traceback(
+    ExceptionTraceback(
         exc_name="FileNotFoundError",
         exc_msg="[Errno 2] No such file or directory: 'command_that'",
-        entries=CHAINED_TRACEBACK_ENTRIES_0,
+        stack_frames=CHAINED_TRACEBACK_ENTRIES_0,
         is_caused=False,
         is_context=False,
     ),
-    com.Traceback(
+    ExceptionTraceback(
         exc_name="AttributeError",
         exc_msg="",
-        entries=CHAINED_TRACEBACK_ENTRIES_1,
+        stack_frames=CHAINED_TRACEBACK_ENTRIES_1,
         is_caused=False,
         is_context=True,
     ),
-    com.Traceback(
+    ExceptionTraceback(
         exc_name="KeyError",
         exc_msg="Wrapping KeyError",
-        entries=CHAINED_TRACEBACK_ENTRIES_2,
+        stack_frames=CHAINED_TRACEBACK_ENTRIES_2,
         is_caused=True,
         is_context=False,
     ),

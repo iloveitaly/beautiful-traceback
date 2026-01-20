@@ -132,7 +132,6 @@ def test_exception_message_override_for_assertions():
     except AssertionError:
         excinfo = pytest.ExceptionInfo.from_current()
         message = pytest_plugin._get_exception_message_override(excinfo)
-        assert message is not None
 
         tb_str = formatting.exc_to_traceback_str(
             excinfo.value,

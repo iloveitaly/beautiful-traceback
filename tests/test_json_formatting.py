@@ -25,10 +25,12 @@ def env_setup():
 
 
 def test_simple_exception(env_setup):
+    result = {}
     try:
         raise ValueError("test error message")
     except ValueError:
         exc_info = sys.exc_info()
+        assert exc_info[1] is not None
         result = exc_to_json(exc_info[1], exc_info[2])
 
     assert result["exception"] == "ValueError"
@@ -50,6 +52,7 @@ def test_simple_exception(env_setup):
 
 
 def test_exception_chain_with_cause(env_setup):
+    result = {}
     try:
         try:
             raise KeyError("missing_key")
@@ -57,6 +60,7 @@ def test_exception_chain_with_cause(env_setup):
             raise ValueError("wrapper error") from e
     except ValueError:
         exc_info = sys.exc_info()
+        assert exc_info[1] is not None
         result = exc_to_json(exc_info[1], exc_info[2])
 
     assert result["exception"] == "ValueError"
@@ -72,6 +76,7 @@ def test_exception_chain_with_cause(env_setup):
 
 
 def test_exception_chain_with_context(env_setup):
+    result = {}
     try:
         try:
             raise KeyError("context_key")
@@ -79,6 +84,7 @@ def test_exception_chain_with_context(env_setup):
             raise ValueError("new error")
     except ValueError:
         exc_info = sys.exc_info()
+        assert exc_info[1] is not None
         result = exc_to_json(exc_info[1], exc_info[2])
 
     assert result["exception"] == "ValueError"
@@ -96,20 +102,25 @@ def test_local_stack_only_false(env_setup):
 
     library_function.__module__ = "requests.sessions"
 
+    result = {}
     try:
         library_function()
     except RuntimeError:
         exc_info = sys.exc_info()
+        assert exc_info[1] is not None
         result = exc_to_json(exc_info[1], exc_info[2], local_stack_only=False)
 
     assert len(result["frames"]) > 0
 
 
 def test_local_stack_only_true(env_setup):
+    result_local = {}
+    result_all = {}
     try:
         raise RuntimeError("local error")
     except RuntimeError:
         exc_info = sys.exc_info()
+        assert exc_info[1] is not None
         result_all = exc_to_json(exc_info[1], exc_info[2], local_stack_only=False)
         result_local = exc_to_json(exc_info[1], exc_info[2], local_stack_only=True)
 
@@ -120,10 +131,12 @@ def test_local_stack_only_true(env_setup):
 
 
 def test_aliased_paths_not_full_paths(env_setup):
+    result = {}
     try:
         raise ValueError("test")
     except ValueError:
         exc_info = sys.exc_info()
+        assert exc_info[1] is not None
         result = exc_to_json(exc_info[1], exc_info[2])
 
     for frame in result["frames"]:
@@ -133,6 +146,7 @@ def test_aliased_paths_not_full_paths(env_setup):
 
 
 def test_circular_exception_reference(env_setup):
+    result = {}
     try:
         exc1 = ValueError("first")
         exc2 = RuntimeError("second")
@@ -141,6 +155,7 @@ def test_circular_exception_reference(env_setup):
         raise exc1
     except ValueError:
         exc_info = sys.exc_info()
+        assert exc_info[1] is not None
         result = exc_to_json(exc_info[1], exc_info[2])
 
     assert result["exception"] == "ValueError"
@@ -157,10 +172,12 @@ def test_exception_with_no_traceback(env_setup):
 
 
 def test_frame_structure(env_setup):
+    result = {}
     try:
         raise ValueError("test")
     except ValueError:
         exc_info = sys.exc_info()
+        assert exc_info[1] is not None
         result = exc_to_json(exc_info[1], exc_info[2])
 
     frame = result["frames"][0]
@@ -174,10 +191,12 @@ def test_frame_structure(env_setup):
 
 
 def test_multiple_alias_types(env_setup):
+    result = {}
     try:
         raise ValueError("test")
     except ValueError:
         exc_info = sys.exc_info()
+        assert exc_info[1] is not None
         result = exc_to_json(exc_info[1], exc_info[2], local_stack_only=False)
 
     aliases_found = {frame["alias"] for frame in result["frames"]}
@@ -190,6 +209,7 @@ def test_local_stack_only_filters_chain(env_setup):
 
     site_function.__module__ = "requests.sessions"
 
+    result = {}
     try:
         try:
             site_function()
@@ -197,6 +217,7 @@ def test_local_stack_only_filters_chain(env_setup):
             raise ValueError("wrapper") from e
     except ValueError:
         exc_info = sys.exc_info()
+        assert exc_info[1] is not None
         result = exc_to_json(exc_info[1], exc_info[2], local_stack_only=True)
 
     for frame in result["frames"]:
