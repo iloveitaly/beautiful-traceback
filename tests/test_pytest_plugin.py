@@ -144,6 +144,18 @@ def test_exception_message_override_for_assertions():
         assert "assert 1 == 2" in tb_str
 
 
+def test_pytest_assertion_details_capture():
+    """Test that pytest assertion details are extracted."""
+    try:
+        assert 1 == 2
+    except AssertionError:
+        excinfo = pytest.ExceptionInfo.from_current()
+        details = pytest_plugin._get_pytest_assertion_details(excinfo)
+
+        assert details is not None
+        assert "assert 1 == 2" in details
+
+
 @pytest.mark.parametrize(
     ("exc_type", "message"),
     [
