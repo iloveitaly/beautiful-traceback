@@ -71,19 +71,27 @@ def _get_pytest_assertion_details(excinfo: pytest.ExceptionInfo) -> str | None:
     except Exception:
         return None
 
-    # Get the full formatted traceback text. pytest doesn't expose longreprtext
-    # as a public attribute, but some versions may have it. Fall back to str()
-    # which calls the repr object's __str__() method.
-    longreprtext = getattr(repr_info, "longreprtext", None)
-    if not longreprtext:
-        longreprtext = str(repr_info)
+    reprtraceback = getattr(repr_info, "reprtraceback", None)
+    if reprtraceback is None:
+        chain = getattr(repr_info, "chain", None)
+        if chain:
+            reprtraceback = chain[-1][0]
 
-    if not longreprtext:
+    if reprtraceback is None:
+        return None
+
+    reprentries = getattr(reprtraceback, "reprentries", None)
+    if not reprentries:
+        return None
+
+    last_entry = reprentries[-1]
+    entry_lines = getattr(last_entry, "lines", None)
+    if not entry_lines:
         return None
 
     # Keep only the assertion diff lines for concise appending.
     lines = []
-    for line in longreprtext.splitlines():
+    for line in entry_lines:
         # Keep pytest's assertion diff lines and the failing expression.
         stripped = line.lstrip()
         if stripped.startswith("E"):
@@ -116,13 +124,7 @@ def _format_traceback(excinfo: pytest.ExceptionInfo, config: Config) -> str:
     )
 
     if assertion_details:
-        formatted_traceback += (
-            os.linesep
-            + "PYTEST ASSERTION"
-            + os.linesep
-            + assertion_details
-            + os.linesep
-        )
+        formatted_traceback += os.linesep + assertion_details + os.linesep
 
     return formatted_traceback
 
