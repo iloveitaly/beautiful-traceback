@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://github.com/iloveitaly/beautiful-traceback/compare/v0.3.0...v0.4.0) (2026-01-27)
+
+
+### Features
+
+* **pytest:** enhance assertion error formatting with diffs ([1dbfff4](https://github.com/iloveitaly/beautiful-traceback/commit/1dbfff4811ca04d464e907163e42799c277db249))
+
+
+### Bug Fixes
+
+* **pytest_plugin:** improve extraction of assertion diff lines ([d0394d2](https://github.com/iloveitaly/beautiful-traceback/commit/d0394d225a19443198cd76130e595cd8f114f38b))
+
 ## [0.3.0](https://github.com/iloveitaly/beautiful-traceback/compare/v0.2.0...v0.3.0) (2026-01-20)
 
 
