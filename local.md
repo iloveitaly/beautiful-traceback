@@ -1,0 +1,1 @@
+- Do not make the CLI complicated. Keep it simple and do not change it without asking me.
