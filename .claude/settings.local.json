@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pytest:*)",
+      "Bash(python3 -c:*)",
+      "Bash(python examples/json_demo.py:*)",
+      "Bash(chmod:*)",
+      "Bash(timeout 3 uv run:*)",
+      "Bash(timeout 3 python:*)",
+      "Bash(python3:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
