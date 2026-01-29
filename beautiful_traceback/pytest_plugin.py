@@ -1,10 +1,21 @@
+"""Pytest plugin that preserves rewritten assertion details in tracebacks.
+
+Pytest rewrites assert statements at import time for test modules (and any
+modules registered via pytest.register_assert_rewrite). The rewritten asserts
+raise AssertionError instances that include rich explanation text and left/right
+diffs inside pytest's repr objects, not on the exception itself. This plugin
+extracts those repr details and appends them to beautiful_traceback output.
+"""
+
 import os
 from typing import Any, Generator
 
-from . import formatting
 import pytest
-
 from pytest import Config
+
+from . import formatting
+from .pytest_assertion import get_exception_message_override
+from .pytest_assertion import get_pytest_assertion_details
 
 
 def _get_option(config: Config, key: str) -> Any:
@@ -22,96 +33,10 @@ def _get_option(config: Config, key: str) -> Any:
     return val
 
 
-def _get_exception_message_override(excinfo: pytest.ExceptionInfo) -> str | None:
-    """Return pytest's verbose exception message when rewriting adds detail.
-
-    The plugin overrides pytest's longrepr rendering, which skips the
-    ExceptionInfo repr where pytest stores rewritten assertion diffs. Without
-    this, AssertionError messages collapse to str(exc) and omit left/right
-    details. Pulling reprcrash.message preserves that verbose message when
-    pytest provides one.
-    """
-    try:
-        repr_info = excinfo.getrepr(style="long")
-    except Exception:
-        return None
-
-    reprcrash = getattr(repr_info, "reprcrash", None)
-    if reprcrash is None:
-        return None
-
-    message = getattr(reprcrash, "message", None)
-    if not message:
-        return None
-
-    exc_name = type(excinfo.value).__name__
-    prefix = f"{exc_name}: "
-    if message.startswith(prefix):
-        message = message.removeprefix(prefix)
-
-    if not message or message == exc_name:
-        return None
-
-    exc_message = str(excinfo.value)
-    if message == exc_message:
-        return None
-
-    return message
-
-
-def _get_pytest_assertion_details(excinfo: pytest.ExceptionInfo) -> str | None:
-    """Return the pytest assertion diff lines for AssertionError."""
-    if not isinstance(excinfo.value, AssertionError):
-        return None
-
-    try:
-        # pytest stores assertion diffs on its own repr object, not the exception.
-        # Reference: https://github.com/pytest-dev/pytest/blob/main/src/_pytest/_code/code.py
-        repr_info = excinfo.getrepr(style="long")
-    except Exception:
-        return None
-
-    reprtraceback = getattr(repr_info, "reprtraceback", None)
-    if reprtraceback is None:
-        chain = getattr(repr_info, "chain", None)
-        if chain:
-            reprtraceback = chain[-1][0]
-
-    if reprtraceback is None:
-        return None
-
-    reprentries = getattr(reprtraceback, "reprentries", None)
-    if not reprentries:
-        return None
-
-    last_entry = reprentries[-1]
-    entry_lines = getattr(last_entry, "lines", None)
-    if not entry_lines:
-        return None
-
-    # Keep only the assertion diff lines for concise appending.
-    lines = []
-    for line in entry_lines:
-        # Keep pytest's assertion diff lines and the failing expression.
-        stripped = line.lstrip()
-        if stripped.startswith("E"):
-            lines.append(stripped)
-            continue
-
-        # Include the source line marker when present.
-        if stripped.startswith(">"):
-            lines.append(stripped)
-
-    if not lines:
-        return None
-
-    return os.linesep.join(lines)
-
-
 def _format_traceback(excinfo: pytest.ExceptionInfo, config: Config) -> str:
-    """Format a traceback with beautiful_traceback styling and pytest assertion details."""
-    message_override = _get_exception_message_override(excinfo)
-    assertion_details = _get_pytest_assertion_details(excinfo)
+    """Format a traceback with beautiful_traceback styling and pytest details."""
+    message_override = get_exception_message_override(excinfo)
+    assertion_details = get_pytest_assertion_details(excinfo)
 
     formatted_traceback = formatting.exc_to_traceback_str(
         excinfo.value,
