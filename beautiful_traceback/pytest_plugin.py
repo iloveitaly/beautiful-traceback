@@ -37,9 +37,7 @@ def _format_traceback(excinfo: pytest.ExceptionInfo, config: Config) -> str:
     """Format a traceback with beautiful_traceback styling and pytest details."""
     message_override = get_exception_message_override(excinfo)
     assertion_details = get_pytest_assertion_details(excinfo)
-    exclude_patterns = _get_option(
-        config, "enable_beautiful_traceback_exclude_patterns"
-    )
+    exclude_patterns = _get_option(config, "beautiful_traceback_exclude_patterns")
 
     formatted_traceback = formatting.exc_to_traceback_str(
         excinfo.value,
@@ -74,7 +72,7 @@ def pytest_addoption(parser) -> None:
     )
 
     parser.addini(
-        "enable_beautiful_traceback_exclude_patterns",
+        "beautiful_traceback_exclude_patterns",
         "Exclude traceback frames that match regex patterns",
         type="linelist",
         default=[],

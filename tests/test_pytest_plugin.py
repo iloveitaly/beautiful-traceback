@@ -68,9 +68,9 @@ def test_pytest_addoption():
     assert second_call[1]["type"] == "bool"
     assert second_call[1]["default"] is True
 
-    # Check third call - enable_beautiful_traceback_exclude_patterns
+    # Check third call - beautiful_traceback_exclude_patterns
     third_call = parser.addini.call_args_list[2]
-    assert third_call[0][0] == "enable_beautiful_traceback_exclude_patterns"
+    assert third_call[0][0] == "beautiful_traceback_exclude_patterns"
     assert "exclude" in third_call[0][1].lower()
     assert third_call[1]["type"] == "linelist"
     assert third_call[1]["default"] == []
