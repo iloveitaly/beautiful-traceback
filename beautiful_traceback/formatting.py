@@ -144,8 +144,37 @@ def _row_matches_exclude_patterns(
     if not exclude_patterns:
         return False
 
-    haystack = f"{row.alias} {row.full_module}:{row.lineno} {row.call} {row.context}"
-    return any(pattern.search(haystack) for pattern in exclude_patterns)
+    # Try multiple representations so patterns can match different parts:
+    # 1. short_module: "_pytest/runner.py" (aliased path without prefix)
+    # 2. full_module: "/path/to/site-packages/_pytest/runner.py" (absolute path)
+    # 3. haystack_full: "<site> /path/to/site-packages/_pytest/runner.py:353 from_call result: ..."
+    # 4. haystack_short: "<site> _pytest/runner.py:353 from_call result: ..."
+    haystack_full = (
+        f"{row.alias} {row.full_module}:{row.lineno} {row.call} {row.context}"
+    )
+    haystack_short = (
+        f"{row.alias} {row.short_module}:{row.lineno} {row.call} {row.context}"
+    )
+    candidates = [
+        row.short_module,
+        row.full_module,
+        haystack_full,
+        haystack_short,
+    ]
+    for pattern in exclude_patterns:
+        matched_candidate = None
+        match_text = None
+        for candidate in candidates:
+            match = pattern.search(candidate)
+            if match:
+                matched_candidate = candidate
+                match_text = match.group(0)
+                break
+
+        if matched_candidate:
+            return True
+
+    return False
 
 
 def _py_paths() -> typ.List[str]:

@@ -156,6 +156,14 @@ beautiful_traceback_exclude_patterns = [
 ]
 ```
 
+**Pattern Matching:** Patterns are tested against multiple representations of each frame:
+- `_pytest/runner.py` (short module path)
+- `/path/to/site-packages/_pytest/runner.py` (full module path)
+- `<site> _pytest/runner.py:353 from_call result: ...` (formatted line with short path)
+- `<site> /path/to/.../runner.py:353 from_call result: ...` (formatted line with full path)
+
+This allows you to write simpler patterns like `^_pytest/` instead of needing to match the full site-packages path.
+
 ## Examples
 
 Check out the [examples/](examples/) directory for detailed usage examples including basic usage, exception chaining, logging integration, and more.
