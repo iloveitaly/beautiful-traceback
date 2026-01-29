@@ -46,6 +46,7 @@ def exc_to_json(
     exc_value: BaseException,
     traceback: types.TracebackType | None,
     local_stack_only: bool = False,
+    exclude_patterns: typ.Sequence[str] = (),
 ) -> dict[str, typ.Any]:
     """Convert an exception to a JSON-serializable dictionary.
 
@@ -112,7 +113,11 @@ def exc_to_json(
             "frames": [],
         }
     else:
-        ctx = fmt._init_entries_context(entries, term_width=fmt.DEFAULT_COLUMNS)
+        ctx = fmt._init_entries_context(
+            entries,
+            term_width=fmt.DEFAULT_COLUMNS,
+            exclude_patterns=exclude_patterns,
+        )
         result = _format_traceback_json(
             ctx.rows,
             main_tb.exc_name,
@@ -132,7 +137,11 @@ def exc_to_json(
                     "frames": [],
                 }
             else:
-                ctx = fmt._init_entries_context(entries, term_width=fmt.DEFAULT_COLUMNS)
+                ctx = fmt._init_entries_context(
+                    entries,
+                    term_width=fmt.DEFAULT_COLUMNS,
+                    exclude_patterns=exclude_patterns,
+                )
                 chain_item = _format_traceback_json(
                     ctx.rows,
                     tb.exc_name,

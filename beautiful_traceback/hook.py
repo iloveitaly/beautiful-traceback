@@ -8,7 +8,11 @@ import colorama
 from beautiful_traceback import formatting
 
 
-def init_excepthook(color: bool, local_stack_only: bool) -> typ.Callable:
+def init_excepthook(
+    color: bool,
+    local_stack_only: bool,
+    exclude_patterns: typ.Sequence[str],
+) -> typ.Callable:
     def excepthook(
         exc_type: typ.Type[BaseException],
         exc_value: BaseException,
@@ -17,7 +21,11 @@ def init_excepthook(color: bool, local_stack_only: bool) -> typ.Callable:
         # pylint:disable=unused-argument
         tb_str = (
             formatting.exc_to_traceback_str(
-                exc_value, traceback, color, local_stack_only
+                exc_value,
+                traceback,
+                color,
+                local_stack_only,
+                exclude_patterns=exclude_patterns,
             )
             + "\n"
         )
@@ -39,6 +47,7 @@ def install(
     only_tty: bool = True,
     only_hook_if_default_excepthook: bool = True,
     local_stack_only: bool = False,
+    exclude_patterns: typ.Sequence[str] = (),
 ) -> None:
     """Hook the current excepthook to the beautiful_traceback.
 
@@ -68,7 +77,11 @@ def install(
     if only_hook_if_default_excepthook and not is_default_exepthook:
         return
 
-    sys.excepthook = init_excepthook(color=color, local_stack_only=local_stack_only)
+    sys.excepthook = init_excepthook(
+        color=color,
+        local_stack_only=local_stack_only,
+        exclude_patterns=exclude_patterns,
+    )
 
 
 def uninstall() -> None:

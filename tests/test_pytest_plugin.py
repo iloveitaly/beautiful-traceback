@@ -51,8 +51,8 @@ def test_pytest_addoption():
     parser = Mock()
     pytest_plugin.pytest_addoption(parser)
 
-    # Should be called twice (two options)
-    assert parser.addini.call_count == 2
+    # Should be called three times (three options)
+    assert parser.addini.call_count == 3
 
     # Check first call - enable_beautiful_traceback
     first_call = parser.addini.call_args_list[0]
@@ -67,6 +67,13 @@ def test_pytest_addoption():
     assert "local" in second_call[0][1].lower()
     assert second_call[1]["type"] == "bool"
     assert second_call[1]["default"] is True
+
+    # Check third call - enable_beautiful_traceback_exclude_patterns
+    third_call = parser.addini.call_args_list[2]
+    assert third_call[0][0] == "enable_beautiful_traceback_exclude_patterns"
+    assert "exclude" in third_call[0][1].lower()
+    assert third_call[1]["type"] == "linelist"
+    assert third_call[1]["default"] == []
 
 
 def test_exc_to_traceback_str_integration():
@@ -131,7 +138,7 @@ def test_exception_message_override_for_assertions():
         assert 1 == 2
     except AssertionError:
         excinfo = pytest.ExceptionInfo.from_current()
-        message = pytest_plugin._get_exception_message_override(excinfo)
+        message = pytest_plugin.get_exception_message_override(excinfo)
 
         tb_str = formatting.exc_to_traceback_str(
             excinfo.value,
@@ -150,7 +157,7 @@ def test_pytest_assertion_details_capture():
         assert 1 == 2
     except AssertionError:
         excinfo = pytest.ExceptionInfo.from_current()
-        details = pytest_plugin._get_pytest_assertion_details(excinfo)
+        details = pytest_plugin.get_pytest_assertion_details(excinfo)
 
         assert details is not None
         assert "assert 1 == 2" in details
@@ -171,7 +178,7 @@ def test_exception_message_override_ignores_standard_message(exc_type, message):
         raise exc_type(message)
     except exc_type:
         excinfo = pytest.ExceptionInfo.from_current()
-        message_override = pytest_plugin._get_exception_message_override(excinfo)
+        message_override = pytest_plugin.get_exception_message_override(excinfo)
         assert message_override is None
 
 

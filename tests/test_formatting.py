@@ -89,6 +89,49 @@ def test_formatting_basic():
                 assert fname in line
 
 
+def test_formatting_exclude_patterns(env_setup):
+    trace_str = tests.fixtures.BASIC_TRACEBACK_STR
+    tracebacks = parsing.parse_tracebacks(trace_str)
+    exclude_patterns = [r"click/core\.py"]
+
+    for traceback in tracebacks:
+        tb_str = formatting.format_traceback(
+            traceback,
+            exclude_patterns=exclude_patterns,
+        )
+
+        assert "click/core.py" not in tb_str
+        assert traceback.exc_name in tb_str
+
+
+def test_formatting_exclude_patterns_chained(env_setup):
+    trace_str = tests.fixtures.CHAINED_TRACEBACK_STR
+    tracebacks = parsing.parse_tracebacks(trace_str)
+    exclude_patterns = [r"subprocess\.py"]
+
+    tb_str = formatting.format_tracebacks(
+        tracebacks,
+        exclude_patterns=exclude_patterns,
+    )
+
+    assert "subprocess.py" not in tb_str
+    assert "FileNotFoundError" in tb_str
+    assert "KeyError" in tb_str
+
+
+def test_formatting_exclude_patterns_prunes_aliases(env_setup):
+    tracebacks = parsing.parse_tracebacks(tests.fixtures.BASIC_TRACEBACK_STR)
+    exclude_patterns = [r".+"]
+
+    for traceback in tracebacks:
+        tb_str = formatting.format_traceback(
+            traceback,
+            exclude_patterns=exclude_patterns,
+        )
+
+        assert formatting.ALIASES_HEAD not in tb_str
+
+
 FORMATTING_TEST_CASES = [
     (0, 10, r"    \<\w+\>.*\.py:\d+[ ]+"),
     (1, 10, r"    \<\w+\>.*\.py:\d+[ ]+"),

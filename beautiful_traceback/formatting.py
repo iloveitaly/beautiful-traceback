@@ -129,6 +129,25 @@ TEST_PATHS: typ.List[str] = []
 PWD = os.getcwd()
 
 
+def _compile_exclude_patterns(
+    exclude_patterns: typ.Sequence[str],
+) -> list[re.Pattern[str]]:
+    if not exclude_patterns:
+        return []
+
+    return [re.compile(pattern) for pattern in exclude_patterns]
+
+
+def _row_matches_exclude_patterns(
+    row: Row, exclude_patterns: typ.Sequence[re.Pattern[str]]
+) -> bool:
+    if not exclude_patterns:
+        return False
+
+    haystack = f"{row.alias} {row.full_module}:{row.lineno} {row.call} {row.context}"
+    return any(pattern.search(haystack) for pattern in exclude_patterns)
+
+
 def _py_paths() -> typ.List[str]:
     if TEST_PATHS:
         return TEST_PATHS
@@ -227,7 +246,9 @@ def _iter_entry_rows(
 
 
 def _init_entries_context(
-    entries: StackFrameEntryList, term_width: typ.Optional[int] = None
+    entries: StackFrameEntryList,
+    term_width: typ.Optional[int] = None,
+    exclude_patterns: typ.Sequence[str] = (),
 ) -> Context:
     if term_width is None:
         _term_width = _get_terminal_width()
@@ -246,6 +267,19 @@ def _init_entries_context(
     max_row_width = _term_width - 10
 
     rows = list(_iter_entry_rows(aliases, entry_paths, entries))
+    compiled_exclude_patterns = _compile_exclude_patterns(exclude_patterns)
+    if compiled_exclude_patterns:
+        rows = [
+            row
+            for row in rows
+            if not _row_matches_exclude_patterns(row, compiled_exclude_patterns)
+        ]
+
+    used_aliases = {row.alias for row in rows if row.alias}
+    if used_aliases:
+        aliases = [alias for alias in aliases if alias[0] in used_aliases]
+    else:
+        aliases = []
 
     if rows:
         max_short_module_len = max(
@@ -426,9 +460,15 @@ def _format_traceback(
 
 
 def format_traceback(
-    traceback: ExceptionTraceback, color: bool = False, local_stack_only: bool = False
+    traceback: ExceptionTraceback,
+    color: bool = False,
+    local_stack_only: bool = False,
+    exclude_patterns: typ.Sequence[str] = (),
 ) -> str:
-    ctx = _init_entries_context(traceback.stack_frames)
+    ctx = _init_entries_context(
+        traceback.stack_frames,
+        exclude_patterns=exclude_patterns,
+    )
     return _format_traceback(ctx, traceback, color, local_stack_only)
 
 
@@ -436,6 +476,7 @@ def format_tracebacks(
     tracebacks: typ.List[ExceptionTraceback],
     color: bool = False,
     local_stack_only: bool = False,
+    exclude_patterns: typ.Sequence[str] = (),
 ) -> str:
     traceback_strs: typ.List[str] = []
 
@@ -447,7 +488,12 @@ def format_tracebacks(
             # traceback_strs.append("vvv happend after ^^^ - ")
             traceback_strs.append(CONTEXT_HEAD + os.linesep)
 
-        traceback_str = format_traceback(tb_tup, color, local_stack_only)
+        traceback_str = format_traceback(
+            tb_tup,
+            color,
+            local_stack_only,
+            exclude_patterns=exclude_patterns,
+        )
         traceback_strs.append(traceback_str)
 
     return os.linesep.join(traceback_strs).strip()
@@ -463,6 +509,7 @@ def exc_to_traceback_str(
     color: bool = False,
     local_stack_only: bool = False,
     exc_msg_override: str | None = None,
+    exclude_patterns: typ.Sequence[str] = (),
 ) -> str:
     # NOTE (mb 2020-08-13): wrt. cause vs context see
     #   https://www.python.org/dev/peps/pep-3134/#enhanced-reporting
@@ -511,7 +558,12 @@ def exc_to_traceback_str(
 
     tracebacks = list(reversed(tracebacks))
 
-    return format_tracebacks(tracebacks, color, local_stack_only)
+    return format_tracebacks(
+        tracebacks,
+        color,
+        local_stack_only,
+        exclude_patterns=exclude_patterns,
+    )
 
 
 class LoggingFormatterMixin:

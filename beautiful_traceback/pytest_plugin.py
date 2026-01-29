@@ -37,6 +37,9 @@ def _format_traceback(excinfo: pytest.ExceptionInfo, config: Config) -> str:
     """Format a traceback with beautiful_traceback styling and pytest details."""
     message_override = get_exception_message_override(excinfo)
     assertion_details = get_pytest_assertion_details(excinfo)
+    exclude_patterns = _get_option(
+        config, "enable_beautiful_traceback_exclude_patterns"
+    )
 
     formatted_traceback = formatting.exc_to_traceback_str(
         excinfo.value,
@@ -46,6 +49,7 @@ def _format_traceback(excinfo: pytest.ExceptionInfo, config: Config) -> str:
             config, "enable_beautiful_traceback_local_stack_only"
         ),
         exc_msg_override=message_override,
+        exclude_patterns=exclude_patterns,
     )
 
     if assertion_details:
@@ -67,6 +71,13 @@ def pytest_addoption(parser) -> None:
         "Show only local code (filter out library/framework internals)",
         type="bool",
         default=True,
+    )
+
+    parser.addini(
+        "enable_beautiful_traceback_exclude_patterns",
+        "Exclude traceback frames that match regex patterns",
+        type="linelist",
+        default=[],
     )
 
 

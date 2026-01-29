@@ -130,6 +130,43 @@ def test_local_stack_only_true(env_setup):
     assert len(result_local["frames"]) <= len(result_all["frames"])
 
 
+def test_exclude_patterns(env_setup):
+    result = {}
+    try:
+        raise ValueError("test")
+    except ValueError:
+        exc_info = sys.exc_info()
+        assert exc_info[1] is not None
+        result = exc_to_json(
+            exc_info[1],
+            exc_info[2],
+            exclude_patterns=[r"test_json_formatting\.py"],
+        )
+
+    assert result["frames"] == []
+
+
+def test_exclude_patterns_chain(env_setup):
+    result = {}
+    try:
+        try:
+            raise KeyError("missing_key")
+        except KeyError as e:
+            raise ValueError("wrapper error") from e
+    except ValueError:
+        exc_info = sys.exc_info()
+        assert exc_info[1] is not None
+        result = exc_to_json(
+            exc_info[1],
+            exc_info[2],
+            exclude_patterns=[r"test_json_formatting\.py"],
+        )
+
+    assert result["frames"] == []
+    assert "chain" in result
+    assert result["chain"][0]["frames"] == []
+
+
 def test_aliased_paths_not_full_paths(env_setup):
     result = {}
     try:

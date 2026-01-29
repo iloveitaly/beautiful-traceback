@@ -130,6 +130,9 @@ Customize the plugin in your `pytest.ini` or `pyproject.toml`:
 [tool.pytest.ini_options]
 enable_beautiful_traceback = true                    # Enable/disable the plugin
 enable_beautiful_traceback_local_stack_only = true   # Show only local code (filter libraries)
+enable_beautiful_traceback_exclude_patterns = [      # Regex patterns to drop frames
+  "click/core\\.py",
+]
 ```
 
 Or in `pytest.ini`:
@@ -138,6 +141,19 @@ Or in `pytest.ini`:
 [pytest]
 enable_beautiful_traceback = true
 enable_beautiful_traceback_local_stack_only = true
+enable_beautiful_traceback_exclude_patterns =
+    click/core\.py
+```
+
+Example: filter out pytest, pluggy, and playwright frames from CI tracebacks:
+
+```toml
+[tool.pytest.ini_options]
+enable_beautiful_traceback_exclude_patterns = [
+  "^_pytest/",
+  "^pluggy/",
+  "^playwright/",
+]
 ```
 
 ## Examples
@@ -164,6 +180,7 @@ beautiful_traceback.install(
     only_tty=True,                         # Only activate for TTY output
     only_hook_if_default_excepthook=True,  # Only install if default hook
     local_stack_only=False,                # Filter to show only local code
+    exclude_patterns=["click/core\\.py"],  # Regex patterns to drop frames
     envvar='ENABLE_BEAUTIFUL_TRACEBACK'    # Optional environment variable gate
 )
 ```
