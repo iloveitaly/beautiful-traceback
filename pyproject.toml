@@ -1,6 +1,6 @@
 [project]
 name = "beautiful-traceback"
-version = "0.4.0"
+version = "0.5.0"
 description = "Beautiful, readable Python tracebacks with colors and formatting"
 keywords = ["traceback", "error", "debugging", "formatting"]
 readme = "README.md"
