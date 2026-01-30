@@ -162,17 +162,9 @@ def _row_matches_exclude_patterns(
         haystack_short,
     ]
     for pattern in exclude_patterns:
-        matched_candidate = None
-        match_text = None
         for candidate in candidates:
-            match = pattern.search(candidate)
-            if match:
-                matched_candidate = candidate
-                match_text = match.group(0)
-                break
-
-        if matched_candidate:
-            return True
+            if pattern.search(candidate):
+                return True
 
     return False
 
