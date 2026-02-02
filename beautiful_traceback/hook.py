@@ -3,8 +3,6 @@ import sys
 import types
 import typing as typ
 
-import colorama
-
 from beautiful_traceback import formatting
 
 
@@ -18,7 +16,6 @@ def init_excepthook(
         exc_value: BaseException,
         traceback: types.TracebackType,
     ) -> None:
-        # pylint:disable=unused-argument
         tb_str = (
             formatting.exc_to_traceback_str(
                 exc_value,
@@ -29,14 +26,8 @@ def init_excepthook(
             )
             + "\n"
         )
-        if color:
-            colorama.init()
-            try:
-                sys.stderr.write(tb_str)
-            finally:
-                colorama.deinit()
-        else:
-            sys.stderr.write(tb_str)
+
+        sys.stderr.write(tb_str)
 
     return excepthook
 
@@ -61,18 +52,17 @@ def install(
     if envvar and os.environ.get(envvar, "0") == "0":
         return
 
-    # Respect NO_COLOR environment variable
     if "NO_COLOR" in os.environ:
         color = False
 
-    isatty = getattr(sys.stderr, "isatty", lambda: False)
-    if only_tty and not isatty():
+    # avoid installing when not running in a tty
+    isatty = getattr(sys.stderr, "isatty", lambda: False)()
+    if only_tty and not isatty:
         return
 
-    if not isatty():
+    if not isatty:
         color = False
 
-    # pylint:disable=comparison-with-callable   ; intentional
     is_default_exepthook = sys.excepthook == sys.__excepthook__
     if only_hook_if_default_excepthook and not is_default_exepthook:
         return
