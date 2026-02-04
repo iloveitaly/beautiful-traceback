@@ -55,6 +55,44 @@ Shows how to use `LoggingFormatter` to get beautiful tracebacks in your Python l
 ### `comparison.py`
 Side-by-side comparison showing the same exception with standard Python traceback vs beautiful-traceback formatting.
 
+### `json_demo.py` 📊 JSON Formatting
+Demonstrates `exc_to_json()` for converting exceptions to structured JSON:
+- Simple exceptions
+- Exception chains
+- Using `local_stack_only` flag
+
+```bash
+uv run examples/json_demo.py
+```
+
+Perfect for production logging with structured loggers like structlog.
+
+### `fastapi_demo.py` 🚀 FastAPI Integration
+Shows how to use `exc_to_json()` in a FastAPI application for JSON logging.
+
+**Prerequisites:**
+```bash
+pip install fastapi uvicorn
+```
+
+**Run:**
+```bash
+# Direct execution
+python examples/fastapi_demo.py
+
+# Or with uvicorn for auto-reload
+uvicorn examples.fastapi_demo:app --reload
+```
+
+**Endpoints:**
+- `GET /` - Root endpoint with instructions
+- `GET /error` - Raises a simple KeyError
+- `GET /chained-error` - Raises a chained exception
+- `GET /users/{user_id}` - Returns user or raises error if not found
+- `GET /local-only-error` - Compare full vs local-only tracebacks
+
+The demo includes a global exception handler that catches all exceptions, converts them to JSON using `exc_to_json()`, and returns structured error responses.
+
 ## Features Demonstrated
 
 - ✅ Colored, formatted output
@@ -62,6 +100,8 @@ Side-by-side comparison showing the same exception with standard Python tracebac
 - ✅ Call stack visualization
 - ✅ Exception chaining support
 - ✅ Integration with Python logging
+- ✅ JSON formatting for production logging
+- ✅ FastAPI integration
 - ✅ IPython/Jupyter support (via `_extension.py`)
 - ✅ Pytest plugin support
 
@@ -80,6 +120,18 @@ import logging
 handler = logging.StreamHandler()
 handler.setFormatter(beautiful_traceback.LoggingFormatter())
 logger.addHandler(handler)
+
+# Or use JSON formatting for production
+import sys
+from beautiful_traceback import exc_to_json
+
+try:
+    # your code
+    pass
+except Exception:
+    exc_info = sys.exc_info()
+    json_tb = exc_to_json(exc_info[1], exc_info[2], local_stack_only=True)
+    # Pass json_tb to your structured logger
 ```
 
 ## Tips
