@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.5.0](https://github.com/iloveitaly/beautiful-traceback/compare/v0.4.0...v0.5.0) (2026-01-30)
+
+
+### Features
+
+* **pytest:** add exclude_patterns option for frame filtering ([a90b3e7](https://github.com/iloveitaly/beautiful-traceback/commit/a90b3e79a12f7880e818ca30223c3ea231c0a15d))
+
+
+### Bug Fixes
+
+* **pytest_plugin:** rename exclude_patterns ini option for clarity ([4207c75](https://github.com/iloveitaly/beautiful-traceback/commit/4207c75ba346604925939f8e44a681f6d536ffa3))
+
+
+### Documentation
+
+* add initial agent and command prompts for gemini and Claude ([5a13921](https://github.com/iloveitaly/beautiful-traceback/commit/5a139214c1074f94fa6e1cd47ae4adf1d80c6b8a))
+* add local guideline to keep CLI simple ([56bef23](https://github.com/iloveitaly/beautiful-traceback/commit/56bef2305a08c86072618356104540b3d34137c2))
+* clarify exclude pattern matching and supported formats ([7168d88](https://github.com/iloveitaly/beautiful-traceback/commit/7168d88b9574302fa97e3eb3476692c1a4f14379))
+* remove custom coding rules, prompts and instructions files ([b268ad6](https://github.com/iloveitaly/beautiful-traceback/commit/b268ad6f10d19ff0cf2768b43bb84eeebd3d9724))
+
 ## [0.4.0](https://github.com/iloveitaly/beautiful-traceback/compare/v0.3.0...v0.4.0) (2026-01-27)
 
 
