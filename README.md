@@ -1,7 +1,10 @@
 # Beautiful, Readable Python Stack Traces
 
-[![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
-[![Python Versions](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Release Notes](https://img.shields.io/github/release/iloveitaly/beautiful-traceback)](https://github.com/iloveitaly/beautiful-traceback/releases)
+[![Downloads](https://static.pepy.tech/badge/beautiful-traceback/month)](https://pepy.tech/project/beautiful-traceback)
+[![Python Versions](https://img.shields.io/pypi/pyversions/beautiful-traceback)](https://pypi.org/project/beautiful-traceback)
+![GitHub CI Status](https://github.com/iloveitaly/beautiful-traceback/actions/workflows/build_and_publish.yml/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Human readable stacktraces for Python.
 
@@ -285,3 +288,7 @@ Beautiful Traceback is heavily inspired by the backtrace module by [nir0s](https
 ## License
 
 [MIT License](LICENSE.md)
+
+---
+
+*This project was created from [iloveitaly/python-package-template](https://github.com/iloveitaly/python-package-template)*
