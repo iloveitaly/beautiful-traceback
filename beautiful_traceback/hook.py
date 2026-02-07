@@ -1,9 +1,22 @@
 import os
 import sys
+import threading
 import types
 import typing as typ
 
+import colorama
+
 from beautiful_traceback import formatting
+
+
+def _format_thread_header(thread: threading.Thread, color: bool) -> str:
+    daemon_suffix = " (daemon)" if thread.daemon else ""
+    text = f"Exception in thread {thread.name}{daemon_suffix}:\n"
+
+    if not color:
+        return text
+
+    return colorama.Fore.RED + colorama.Style.BRIGHT + text + colorama.Style.RESET_ALL
 
 
 def init_excepthook(
@@ -15,6 +28,7 @@ def init_excepthook(
         exc_type: typ.Type[BaseException],
         exc_value: BaseException,
         traceback: types.TracebackType,
+        thread: threading.Thread | None = None,
     ) -> None:
         tb_str = (
             formatting.exc_to_traceback_str(
@@ -26,6 +40,9 @@ def init_excepthook(
             )
             + "\n"
         )
+
+        if thread is not None:
+            tb_str = _format_thread_header(thread, color) + tb_str
 
         sys.stderr.write(tb_str)
 
@@ -67,13 +84,22 @@ def install(
     if only_hook_if_default_excepthook and not is_default_exepthook:
         return
 
-    sys.excepthook = init_excepthook(
+    excepthook = init_excepthook(
         color=color,
         local_stack_only=local_stack_only,
         exclude_patterns=exclude_patterns,
     )
+    sys.excepthook = excepthook
+
+    def thread_excepthook(args):
+        excepthook(
+            args.exc_type, args.exc_value, args.exc_traceback, thread=args.thread
+        )
+
+    threading.excepthook = thread_excepthook
 
 
 def uninstall() -> None:
     """Restore the default excepthook."""
     sys.excepthook = sys.__excepthook__
+    threading.excepthook = threading.__excepthook__

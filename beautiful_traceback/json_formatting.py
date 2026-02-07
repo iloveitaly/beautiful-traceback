@@ -4,6 +4,7 @@ This module provides exc_to_json() which converts exceptions to structured
 dictionaries suitable for JSON logging in production environments.
 """
 
+import threading
 import types
 import typing as typ
 
@@ -47,6 +48,7 @@ def exc_to_json(
     traceback: types.TracebackType | None,
     local_stack_only: bool = False,
     exclude_patterns: typ.Sequence[str] = (),
+    thread: threading.Thread | None = None,
 ) -> dict[str, typ.Any]:
     """Convert an exception to a JSON-serializable dictionary.
 
@@ -97,11 +99,17 @@ def exc_to_json(
     tracebacks = _exc_to_traceback_list(exc_value, traceback)
 
     if not tracebacks:
-        return {
+        result = {
             "exception": type(exc_value).__name__,
             "message": str(exc_value),
             "frames": [],
         }
+        if thread is not None:
+            result["thread"] = {
+                "name": thread.name,
+                "daemon": thread.daemon,
+            }
+        return result
 
     main_tb = tracebacks[0]
     entries = list(main_tb.stack_frames)
@@ -152,6 +160,12 @@ def exc_to_json(
             chain.append(chain_item)
 
         result["chain"] = chain
+
+    if thread is not None:
+        result["thread"] = {
+            "name": thread.name,
+            "daemon": thread.daemon,
+        }
 
     return result
 
