@@ -167,6 +167,10 @@ beautiful_traceback_exclude_patterns = [
 
 This allows you to write simpler patterns like `^_pytest/` instead of needing to match the full site-packages path.
 
+## Threading Support
+
+`beautiful_traceback.install()` hooks both `sys.excepthook` and `threading.excepthook`, so unhandled exceptions in background threads are automatically formatted. Thread name and daemon status are shown in the exception header (e.g., `Exception in thread Worker-1 (daemon):`). The `exc_to_json()` function also accepts an optional `thread` parameter to include thread metadata in structured JSON output. See [`examples/threading_example.py`](examples/threading_example.py) for a complete demonstration.
+
 ## Examples
 
 Check out the [examples/](examples/) directory for detailed usage examples including basic usage, exception chaining, logging integration, and more.
