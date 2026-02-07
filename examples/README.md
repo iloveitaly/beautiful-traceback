@@ -55,6 +55,20 @@ Shows how to use `LoggingFormatter` to get beautiful tracebacks in your Python l
 ### `comparison.py`
 Side-by-side comparison showing the same exception with standard Python traceback vs beautiful-traceback formatting.
 
+### `threading_example.py` 🧵 Threading Support
+Demonstrates how beautiful-traceback catches and formats exceptions in background threads:
+- Regular worker threads
+- Daemon threads (marked with "(daemon)" suffix)
+- Thread names displayed in exception headers
+- Multiple concurrent thread errors
+- **JSON logging with thread metadata** (includes thread name and daemon status)
+
+```bash
+python examples/threading_example.py
+```
+
+Shows how exceptions in background threads are automatically caught and beautifully formatted, just like main-thread exceptions. Also demonstrates how to use `exc_to_json()` with thread metadata for structured production logging.
+
 ### `json_demo.py` 📊 JSON Formatting
 Demonstrates `exc_to_json()` for converting exceptions to structured JSON:
 - Simple exceptions
@@ -99,6 +113,7 @@ The demo includes a global exception handler that catches all exceptions, conver
 - ✅ Path aliasing (shortens long paths)
 - ✅ Call stack visualization
 - ✅ Exception chaining support
+- ✅ Threading support (background thread exceptions)
 - ✅ Integration with Python logging
 - ✅ JSON formatting for production logging
 - ✅ FastAPI integration

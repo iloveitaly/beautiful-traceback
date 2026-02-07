@@ -99,7 +99,9 @@ if __name__ == "__main__":
     # Example 3: Named thread with specific error
     print("\n3. Database connection thread:")
     print("-" * 50)
-    db_thread = threading.Thread(target=database_connection, name="DB-Connection-Pool-1")
+    db_thread = threading.Thread(
+        target=database_connection, name="DB-Connection-Pool-1"
+    )
     db_thread.start()
     db_thread.join()
 
@@ -107,7 +109,9 @@ if __name__ == "__main__":
     print("\n4. JSON logging with thread metadata:")
     print("-" * 50)
     print("  (Useful for production structured logging)")
-    json_thread = threading.Thread(target=json_logging_task, name="API-Worker-3", daemon=True)
+    json_thread = threading.Thread(
+        target=json_logging_task, name="API-Worker-3", daemon=True
+    )
     json_thread.start()
     json_thread.join()
 
