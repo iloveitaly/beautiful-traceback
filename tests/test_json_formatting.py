@@ -1,5 +1,6 @@
 import os
 import sys
+import threading
 
 import pytest
 
@@ -264,3 +265,51 @@ def test_local_stack_only_filters_chain(env_setup):
         for chained_exc in result["chain"]:
             for frame in chained_exc["frames"]:
                 assert frame["alias"] == "<pwd>"
+
+
+def test_thread_metadata(env_setup):
+    result = {}
+    try:
+        raise ValueError("test error in thread")
+    except ValueError:
+        exc_info = sys.exc_info()
+        assert exc_info[1] is not None
+
+        thread = threading.Thread(name="TestWorker", daemon=False)
+        result = exc_to_json(exc_info[1], exc_info[2], thread=thread)
+
+    assert result["exception"] == "ValueError"
+    assert result["message"] == "test error in thread"
+    assert "thread" in result
+    assert result["thread"]["name"] == "TestWorker"
+    assert result["thread"]["daemon"] is False
+
+
+def test_thread_metadata_daemon(env_setup):
+    result = {}
+    try:
+        raise RuntimeError("daemon thread error")
+    except RuntimeError:
+        exc_info = sys.exc_info()
+        assert exc_info[1] is not None
+
+        thread = threading.Thread(name="DaemonWorker", daemon=True)
+        result = exc_to_json(exc_info[1], exc_info[2], thread=thread)
+
+    assert result["exception"] == "RuntimeError"
+    assert "thread" in result
+    assert result["thread"]["name"] == "DaemonWorker"
+    assert result["thread"]["daemon"] is True
+
+
+def test_thread_metadata_none(env_setup):
+    result = {}
+    try:
+        raise ValueError("no thread metadata")
+    except ValueError:
+        exc_info = sys.exc_info()
+        assert exc_info[1] is not None
+        result = exc_to_json(exc_info[1], exc_info[2], thread=None)
+
+    assert result["exception"] == "ValueError"
+    assert "thread" not in result
