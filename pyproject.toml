@@ -5,7 +5,7 @@ description = "Beautiful, readable Python tracebacks with colors and formatting"
 keywords = ["traceback", "error", "debugging", "formatting"]
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = ["structlog-config>=0.6.0","colorama>=0.4.6"]
+dependencies = ["colorama>=0.4.6"]
 authors = [{ name = "Michael Bianco", email = "mike@mikebian.co" }]
 urls = { "Repository" = "https://github.com/iloveitaly/beautiful-traceback" }
 
