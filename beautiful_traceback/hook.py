@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 import threading
@@ -7,6 +8,8 @@ import typing as typ
 import colorama
 
 from beautiful_traceback import formatting
+
+log = logging.getLogger(__name__)
 
 
 def _format_thread_header(thread: threading.Thread, color: bool) -> str:
@@ -80,9 +83,18 @@ def install(
     if not isatty:
         color = False
 
-    is_default_exepthook = sys.excepthook == sys.__excepthook__
-    if only_hook_if_default_excepthook and not is_default_exepthook:
+    is_default_sys_hook = sys.excepthook == sys.__excepthook__
+    if only_hook_if_default_excepthook and not is_default_sys_hook:
         return
+
+    if not is_default_sys_hook:
+        log.info("overriding non-default sys.excepthook: %s", sys.excepthook)
+
+    is_default_thread_hook = threading.excepthook == threading.__excepthook__
+    if not is_default_thread_hook:
+        log.info(
+            "overriding non-default threading.excepthook: %s", threading.excepthook
+        )
 
     excepthook = init_excepthook(
         color=color,
