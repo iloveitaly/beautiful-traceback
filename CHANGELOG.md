@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.6.0](https://github.com/iloveitaly/beautiful-traceback/compare/v0.5.0...v0.6.0) (2026-02-10)
+
+
+### Features
+
+* **hook:** log overrides of non-default excepthooks ([222d6dc](https://github.com/iloveitaly/beautiful-traceback/commit/222d6dc8dbeee3d02a6d6cf4122e87e5a1cd72ec))
+* **traceback:** include thread info for exceptions and hook thread excepthook ([d59579b](https://github.com/iloveitaly/beautiful-traceback/commit/d59579ba3d42b44a5b8ce12c2a06e6c6a39664ab))
+
+
+### Bug Fixes
+
+* stop supporting windows colorama logic ([d49a8eb](https://github.com/iloveitaly/beautiful-traceback/commit/d49a8eb049da99fa796b8a6e7969b63dc8f5064a))
+
+
+### Documentation
+
+* add json_demo and fastapi_demo with usage instructions ([b5d4e12](https://github.com/iloveitaly/beautiful-traceback/commit/b5d4e123636b084b40066e36edb6c90a6c7b1ebb))
+* document automatic exception formatting for threads ([585fcd5](https://github.com/iloveitaly/beautiful-traceback/commit/585fcd53c254ba0da476a6e1cacf07da0fe8528a))
+* document threading example and thread exception support ([9150091](https://github.com/iloveitaly/beautiful-traceback/commit/9150091202b89ec2a0767829e734322b61c4dac9))
+* **examples:** add threading demo showing exceptions in threads ([a7fb795](https://github.com/iloveitaly/beautiful-traceback/commit/a7fb79580b014cf10cdfa074cf1ded05bf9a3491))
+* remove AGENT.md with coding and testing guidelines ([ad341db](https://github.com/iloveitaly/beautiful-traceback/commit/ad341dbdc36c894cf0fc3708d6a47301ae8acd84))
+* update badges and add project template reference in readme ([e331932](https://github.com/iloveitaly/beautiful-traceback/commit/e33193255839e214988e75bc8d6ceb5d56281764))
+
 ## [0.5.0](https://github.com/iloveitaly/beautiful-traceback/compare/v0.4.0...v0.5.0) (2026-01-30)
 
 
