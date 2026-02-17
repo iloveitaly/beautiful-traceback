@@ -1,3 +1,4 @@
+import inspect
 import logging
 import os
 import sys
@@ -10,6 +11,15 @@ import colorama
 from beautiful_traceback import formatting
 
 log = logging.getLogger(__name__)
+
+
+def _source_location(func: typ.Callable) -> str:
+    try:
+        file = inspect.getfile(func)
+        _, line = inspect.getsourcelines(func)
+        return f"{file}:{line}"
+    except (TypeError, OSError):
+        return repr(func)
 
 
 def _format_thread_header(thread: threading.Thread, color: bool) -> str:
@@ -88,12 +98,12 @@ def install(
         return
 
     if not is_default_sys_hook:
-        log.info("overriding non-default sys.excepthook: %s", sys.excepthook)
+        log.info("overriding non-default sys.excepthook: %s", _source_location(sys.excepthook))
 
     is_default_thread_hook = threading.excepthook == threading.__excepthook__
     if not is_default_thread_hook:
         log.info(
-            "overriding non-default threading.excepthook: %s", threading.excepthook
+            "overriding non-default threading.excepthook: %s", _source_location(threading.excepthook)
         )
 
     excepthook = init_excepthook(
