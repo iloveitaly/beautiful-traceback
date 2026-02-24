@@ -31,34 +31,8 @@ Beautiful Traceback groups together what belongs together, adds coloring and ali
 
 ## Installation
 
-### From PyPI (when published)
-
 ```bash
-# Using uv (recommended)
 uv add beautiful-traceback
-
-# Using pip
-pip install beautiful-traceback
-```
-
-### Development Installation
-
-To install from source:
-
-```bash
-git clone https://github.com/iloveitaly/beautiful-traceback
-cd beautiful-traceback
-uv sync
-```
-
-Run examples:
-```bash
-uv run examples/simple.py
-```
-
-Run tests:
-```bash
-uv run pytest
 ```
 
 ## Usage
@@ -169,19 +143,16 @@ This allows you to write simpler patterns like `^_pytest/` instead of needing to
 
 ## Threading Support
 
-`beautiful_traceback.install()` hooks both `sys.excepthook` and `threading.excepthook`, so unhandled exceptions in background threads are automatically formatted. Thread name and daemon status are shown in the exception header (e.g., `Exception in thread Worker-1 (daemon):`). The `exc_to_json()` function also accepts an optional `thread` parameter to include thread metadata in structured JSON output. See [`examples/threading_example.py`](examples/threading_example.py) for a complete demonstration.
+`beautiful_traceback.install()` hooks both `sys.excepthook` and `threading.excepthook`, so unhandled exceptions in background threads are automatically formatted.
+
+- Thread name and daemon status are shown in the exception header (e.g., `Exception in thread Worker-1 (daemon):`)
+- `exc_to_json()` accepts an optional `thread` parameter to include thread metadata in structured JSON output
+
+See [`examples/threading_example.py`](examples/threading_example.py) for a complete demonstration.
 
 ## Examples
 
-Check out the [examples/](examples/) directory for detailed usage examples including basic usage, exception chaining, logging integration, and more.
-
-```bash
-# Quick single-exception example
-uv run examples/simple.py
-
-# Interactive demo with multiple exception types
-uv run examples/demo.py
-```
+Check out the [examples/](examples/) directory for basic usage, exception chaining, logging integration, and more.
 
 ## Configuration
 

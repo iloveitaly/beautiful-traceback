@@ -22,6 +22,7 @@ from . import formatting
 from .pytest_assertion import get_exception_message_override
 from .pytest_assertion import get_pytest_assertion_details
 
+# __package__ is str | None (None when run as a top-level script), so we narrow it here
 assert __package__ is not None
 _namespace: str = __package__
 
