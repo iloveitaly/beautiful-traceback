@@ -18,6 +18,7 @@ from pytest_plugin_utils.config import (
     set_pytest_option,
 )
 
+from . import config
 from . import formatting
 from .pytest_assertion import get_exception_message_override
 from .pytest_assertion import get_pytest_assertion_details
@@ -29,7 +30,7 @@ _namespace: str = __package__
 set_pytest_option(
     _namespace,
     "enable_beautiful_traceback",
-    default=True,
+    default=config.ENABLED if config.ENABLED is not None else True,
     type_hint=bool,
     available="all",
     help="Enable the beautiful traceback plugin",
@@ -37,7 +38,7 @@ set_pytest_option(
 set_pytest_option(
     _namespace,
     "enable_beautiful_traceback_local_stack_only",
-    default=True,
+    default=config.LOCAL_STACK_ONLY if config.LOCAL_STACK_ONLY is not None else True,
     type_hint=bool,
     available="all",
     help="Show only local code (filter out library/framework internals)",
@@ -53,7 +54,7 @@ set_pytest_option(
 set_pytest_option(
     _namespace,
     "beautiful_traceback_show_aliases",
-    default=True,
+    default=config.SHOW_ALIASES if config.SHOW_ALIASES is not None else True,
     type_hint=bool,
     available="all",
     help="Show the 'Aliases for entries in sys.path' section",

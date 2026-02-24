@@ -5,9 +5,11 @@ import sys
 import threading
 import types
 import typing as typ
+import warnings
 
 import colorama
 
+from beautiful_traceback import config
 from beautiful_traceback import formatting
 
 log = logging.getLogger(__name__)
@@ -69,9 +71,9 @@ def install(
     color: bool = True,
     only_tty: bool = True,
     only_hook_if_default_excepthook: bool = True,
-    local_stack_only: bool = False,
+    local_stack_only: bool | None = None,
     exclude_patterns: typ.Sequence[str] = (),
-    show_aliases: bool = True,
+    show_aliases: bool | None = None,
 ) -> None:
     """Hook the current excepthook to the beautiful_traceback.
 
@@ -82,8 +84,29 @@ def install(
     (https://no-color.org/). If NO_COLOR is set (regardless of
     its value), color output will be disabled.
     """
-    if envvar and os.environ.get(envvar, "0") == "0":
+    if config.ENABLED is False:
         return
+
+    if envvar is not None:
+        warnings.warn(
+            "The 'envvar' parameter is deprecated. Use BEAUTIFUL_TRACEBACK_ENABLED=false instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        if os.environ.get(envvar, "0") == "0":
+            return
+
+    local_stack_only = (
+        local_stack_only
+        if local_stack_only is not None
+        else (config.LOCAL_STACK_ONLY if config.LOCAL_STACK_ONLY is not None else False)
+    )
+
+    show_aliases = (
+        show_aliases
+        if show_aliases is not None
+        else (config.SHOW_ALIASES if config.SHOW_ALIASES is not None else True)
+    )
 
     if "NO_COLOR" in os.environ:
         color = False

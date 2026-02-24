@@ -49,15 +49,17 @@ except ImportError:
 
 Please do not add this code e.g. to your `__init__.py` or any other module that your users may import. They may not want you to mess with how their tracebacks are printed.
 
-If you do feel the overwhelming desire to import the `beautiful_traceback` in code that others might import, consider using the `envvar` argument, which will cause the install function to effectively be a noop unless you set `ENABLE_BEAUTIFUL_TRACEBACK=1`.
+If you do feel the overwhelming desire to import the `beautiful_traceback` in code that others might import, use the `BEAUTIFUL_TRACEBACK_ENABLED` environment variable to gate activation:
 
 ```python
 try:
     import beautiful_traceback
-    beautiful_traceback.install(envvar='ENABLE_BEAUTIFUL_TRACEBACK')
+    beautiful_traceback.install()
 except ImportError:
     pass    # no need to fail because of missing dev dependency
 ```
+
+Then set `BEAUTIFUL_TRACEBACK_ENABLED=true` in environments where you want it active. The `envvar` parameter is deprecated in favor of this approach.
 
 Note, that the hook is only installed if the existing hook is the default. Any existing hooks that were installed before the call of `beautiful_traceback.install` will be left in place.
 
@@ -165,16 +167,19 @@ beautiful_traceback.install(
     color=True,                            # Enable colored output
     only_tty=True,                         # Only activate for TTY output
     only_hook_if_default_excepthook=True,  # Only install if default hook
-    local_stack_only=False,                # Filter to show only local code
+    local_stack_only=False,                # Filter to show only local code (overrides BEAUTIFUL_TRACEBACK_LOCAL_STACK_ONLY)
     exclude_patterns=["click/core\\.py"],  # Regex patterns to drop frames
-    envvar='ENABLE_BEAUTIFUL_TRACEBACK'    # Optional environment variable gate
 )
 ```
 
 ### Environment Variables
 
 - **`NO_COLOR`** - Disables colored output when set (respects [no-color.org](https://no-color.org) standard)
-- **`ENABLE_BEAUTIFUL_TRACEBACK`** - Controls activation when using the `envvar` parameter (set to `1` to enable)
+- **`BEAUTIFUL_TRACEBACK_ENABLED`** - Set to `false`/`0`/`no` to disable. Useful when install() is called in shared code.
+- **`BEAUTIFUL_TRACEBACK_LOCAL_STACK_ONLY`** - Set to `true`/`1`/`yes` to filter out library/framework frames.
+- **`BEAUTIFUL_TRACEBACK_SHOW_ALIASES`** - Set to `false`/`0`/`no` to hide the sys.path aliases section.
+
+These env vars serve as fallback defaults for both `install()` and the pytest plugin (CLI args and `pytest.ini` settings take precedence over env vars for pytest).
 
 ### LoggingFormatterMixin
 
