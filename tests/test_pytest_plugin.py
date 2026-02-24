@@ -51,8 +51,8 @@ def test_pytest_addoption():
     parser = Mock()
     pytest_plugin.pytest_addoption(parser)
 
-    # Should be called three times (three options)
-    assert parser.addini.call_count == 3
+    # Should be called four times (four options)
+    assert parser.addini.call_count == 4
 
     # Check first call - enable_beautiful_traceback
     first_call = parser.addini.call_args_list[0]
@@ -74,6 +74,12 @@ def test_pytest_addoption():
     assert "exclude" in third_call[0][1].lower()
     assert third_call[1]["type"] == "linelist"
     assert third_call[1]["default"] == []
+
+    # Check fourth call - beautiful_traceback_show_aliases
+    fourth_call = parser.addini.call_args_list[3]
+    assert fourth_call[0][0] == "beautiful_traceback_show_aliases"
+    assert fourth_call[1]["type"] == "bool"
+    assert fourth_call[1]["default"] is True
 
 
 def test_exc_to_traceback_str_integration():

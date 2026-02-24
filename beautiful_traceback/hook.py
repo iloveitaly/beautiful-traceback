@@ -36,6 +36,7 @@ def init_excepthook(
     color: bool,
     local_stack_only: bool,
     exclude_patterns: typ.Sequence[str],
+    show_aliases: bool = True,
 ) -> typ.Callable:
     def excepthook(
         exc_type: typ.Type[BaseException],
@@ -50,6 +51,7 @@ def init_excepthook(
                 color,
                 local_stack_only,
                 exclude_patterns=exclude_patterns,
+                show_aliases=show_aliases,
             )
             + "\n"
         )
@@ -69,6 +71,7 @@ def install(
     only_hook_if_default_excepthook: bool = True,
     local_stack_only: bool = False,
     exclude_patterns: typ.Sequence[str] = (),
+    show_aliases: bool = True,
 ) -> None:
     """Hook the current excepthook to the beautiful_traceback.
 
@@ -98,18 +101,23 @@ def install(
         return
 
     if not is_default_sys_hook:
-        log.info("overriding non-default sys.excepthook: %s", _source_location(sys.excepthook))
+        log.info(
+            "overriding non-default sys.excepthook: %s",
+            _source_location(sys.excepthook),
+        )
 
     is_default_thread_hook = threading.excepthook == threading.__excepthook__
     if not is_default_thread_hook:
         log.info(
-            "overriding non-default threading.excepthook: %s", _source_location(threading.excepthook)
+            "overriding non-default threading.excepthook: %s",
+            _source_location(threading.excepthook),
         )
 
     excepthook = init_excepthook(
         color=color,
         local_stack_only=local_stack_only,
         exclude_patterns=exclude_patterns,
+        show_aliases=show_aliases,
     )
     sys.excepthook = excepthook
 

@@ -132,6 +132,15 @@ def test_formatting_exclude_patterns_prunes_aliases(env_setup):
         assert formatting.ALIASES_HEAD not in tb_str
 
 
+def test_formatting_show_aliases_false_suppresses_aliases(env_setup):
+    tracebacks = parsing.parse_tracebacks(tests.fixtures.BASIC_TRACEBACK_STR)
+
+    for traceback in tracebacks:
+        tb_str = formatting.format_traceback(traceback, show_aliases=False)
+
+        assert formatting.ALIASES_HEAD not in tb_str
+
+
 FORMATTING_TEST_CASES = [
     (0, 10, r"    \<\w+\>.*\.py:\d+[ ]+"),
     (1, 10, r"    \<\w+\>.*\.py:\d+[ ]+"),

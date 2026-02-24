@@ -48,6 +48,7 @@ def _format_traceback(excinfo: pytest.ExceptionInfo, config: Config) -> str:
         ),
         exc_msg_override=message_override,
         exclude_patterns=exclude_patterns,
+        show_aliases=_get_option(config, "beautiful_traceback_show_aliases"),
     )
 
     if assertion_details:
@@ -76,6 +77,13 @@ def pytest_addoption(parser) -> None:
         "Exclude traceback frames that match regex patterns",
         type="linelist",
         default=[],
+    )
+
+    parser.addini(
+        "beautiful_traceback_show_aliases",
+        "Show the 'Aliases for entries in sys.path' section",
+        type="bool",
+        default=True,
     )
 
 

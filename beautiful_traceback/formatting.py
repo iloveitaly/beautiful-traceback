@@ -441,11 +441,12 @@ def _format_traceback(
     traceback: ExceptionTraceback,
     color: bool = False,
     local_stack_only: bool = False,
+    show_aliases: bool = True,
 ) -> str:
     padded_rows = list(_padded_rows(ctx))
 
     lines = []
-    if ctx.aliases and not ctx.is_wide_mode:
+    if ctx.aliases and not ctx.is_wide_mode and show_aliases:
         lines.append(ALIASES_HEAD)
         lines.extend(_aliases_to_lines(ctx, color))
 
@@ -485,12 +486,13 @@ def format_traceback(
     color: bool = False,
     local_stack_only: bool = False,
     exclude_patterns: typ.Sequence[str] = (),
+    show_aliases: bool = True,
 ) -> str:
     ctx = _init_entries_context(
         traceback.stack_frames,
         exclude_patterns=exclude_patterns,
     )
-    return _format_traceback(ctx, traceback, color, local_stack_only)
+    return _format_traceback(ctx, traceback, color, local_stack_only, show_aliases)
 
 
 def format_tracebacks(
@@ -498,6 +500,7 @@ def format_tracebacks(
     color: bool = False,
     local_stack_only: bool = False,
     exclude_patterns: typ.Sequence[str] = (),
+    show_aliases: bool = True,
 ) -> str:
     traceback_strs: typ.List[str] = []
 
@@ -514,6 +517,7 @@ def format_tracebacks(
             color,
             local_stack_only,
             exclude_patterns=exclude_patterns,
+            show_aliases=show_aliases,
         )
         traceback_strs.append(traceback_str)
 
@@ -531,6 +535,7 @@ def exc_to_traceback_str(
     local_stack_only: bool = False,
     exc_msg_override: str | None = None,
     exclude_patterns: typ.Sequence[str] = (),
+    show_aliases: bool = True,
 ) -> str:
     # NOTE (mb 2020-08-13): wrt. cause vs context see
     #   https://www.python.org/dev/peps/pep-3134/#enhanced-reporting
@@ -584,6 +589,7 @@ def exc_to_traceback_str(
         color,
         local_stack_only,
         exclude_patterns=exclude_patterns,
+        show_aliases=show_aliases,
     )
 
 
