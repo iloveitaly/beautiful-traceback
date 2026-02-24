@@ -49,17 +49,8 @@ except ImportError:
 
 Please do not add this code e.g. to your `__init__.py` or any other module that your users may import. They may not want you to mess with how their tracebacks are printed.
 
-If you do feel the overwhelming desire to import the `beautiful_traceback` in code that others might import, use `BEAUTIFUL_TRACEBACK_ENABLED` to gate activation:
-
-```python
-try:
-    import beautiful_traceback
-    beautiful_traceback.install()
-except ImportError:
-    pass    # no need to fail because of missing dev dependency
-```
-
-Then set `BEAUTIFUL_TRACEBACK_ENABLED=true` in environments where you want it active.
+> [!NOTE]
+> If you must call `install()` in shared code, set `BEAUTIFUL_TRACEBACK_ENABLED=true` only in environments where you want it active. When the env var is absent or falsy, `install()` is a no-op.
 
 Note, that the hook is only installed if the existing hook is the default. Any existing hooks that were installed before the call of `beautiful_traceback.install` will be left in place.
 
@@ -109,6 +100,7 @@ Customize the plugin in your `pytest.ini` or `pyproject.toml`:
 [tool.pytest.ini_options]
 enable_beautiful_traceback = true                    # Enable/disable the plugin
 enable_beautiful_traceback_local_stack_only = true   # Show only local code (filter libraries)
+beautiful_traceback_show_aliases = true              # Show sys.path aliases section
 beautiful_traceback_exclude_patterns = [             # Regex patterns to drop frames
   "click/core\\.py",
 ]
@@ -120,6 +112,7 @@ Or in `pytest.ini`:
 [pytest]
 enable_beautiful_traceback = true
 enable_beautiful_traceback_local_stack_only = true
+beautiful_traceback_show_aliases = true
 beautiful_traceback_exclude_patterns =
     click/core\.py
 ```
@@ -167,7 +160,8 @@ beautiful_traceback.install(
     color=True,                            # Enable colored output
     only_tty=True,                         # Only activate for TTY output
     only_hook_if_default_excepthook=True,  # Only install if default hook
-    local_stack_only=False,                # Filter to show only local code (overrides BEAUTIFUL_TRACEBACK_LOCAL_STACK_ONLY)
+    local_stack_only=None,                 # Defaults to BEAUTIFUL_TRACEBACK_LOCAL_STACK_ONLY env var
+    show_aliases=None,                     # Defaults to BEAUTIFUL_TRACEBACK_SHOW_ALIASES env var
     exclude_patterns=["click/core\\.py"],  # Regex patterns to drop frames
 )
 ```
