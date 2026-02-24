@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.7.0](https://github.com/iloveitaly/beautiful-traceback/compare/v0.6.0...v0.7.0) (2026-02-24)
+
+
+### Features
+
+* **config:** allow env var defaults for plugin and hook ([266255b](https://github.com/iloveitaly/beautiful-traceback/commit/266255b1cdc176dc02717a95c620122a907fbda7))
+* **hook:** log source location of overridden exception hooks ([c7330d2](https://github.com/iloveitaly/beautiful-traceback/commit/c7330d23004f5540219795a923227eba688a8b95))
+* **pytest:** add show_aliases option to control alias display ([ae1e772](https://github.com/iloveitaly/beautiful-traceback/commit/ae1e77218c8d857483bd21bbe7ebe19f207f557d))
+
+
+### Bug Fixes
+
+* set show_aliases default to false in hook and config ([a95d13d](https://github.com/iloveitaly/beautiful-traceback/commit/a95d13dd08d05052674bba790c9fd0d3cb8e94ed))
+
+
+### Documentation
+
+* clarify env var usage and add show_aliases config details ([a91d605](https://github.com/iloveitaly/beautiful-traceback/commit/a91d60557f4d1730550c794328b56775fc2a07bb))
+* clarify show_aliases default is false in README ([a95d13d](https://github.com/iloveitaly/beautiful-traceback/commit/a95d13dd08d05052674bba790c9fd0d3cb8e94ed))
+* streamline install, threading, and examples in README ([fadd24d](https://github.com/iloveitaly/beautiful-traceback/commit/fadd24d26188ee8f8152e3a0066fdd4df1c9e97f))
+
 ## [0.6.0](https://github.com/iloveitaly/beautiful-traceback/compare/v0.5.0...v0.6.0) (2026-02-10)
 
 
