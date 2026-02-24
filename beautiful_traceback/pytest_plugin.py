@@ -30,7 +30,7 @@ _namespace: str = __package__
 set_pytest_option(
     _namespace,
     "enable_beautiful_traceback",
-    default=config.ENABLED if config.ENABLED is not None else True,
+    default=config.env_bool("ENABLED", True),
     type_hint=bool,
     available="all",
     help="Enable the beautiful traceback plugin",
@@ -38,7 +38,7 @@ set_pytest_option(
 set_pytest_option(
     _namespace,
     "enable_beautiful_traceback_local_stack_only",
-    default=config.LOCAL_STACK_ONLY if config.LOCAL_STACK_ONLY is not None else True,
+    default=config.env_bool("LOCAL_STACK_ONLY", True),
     type_hint=bool,
     available="all",
     help="Show only local code (filter out library/framework internals)",
@@ -54,7 +54,7 @@ set_pytest_option(
 set_pytest_option(
     _namespace,
     "beautiful_traceback_show_aliases",
-    default=config.SHOW_ALIASES if config.SHOW_ALIASES is not None else True,
+    default=config.env_bool("SHOW_ALIASES", True),
     type_hint=bool,
     available="all",
     help="Show the 'Aliases for entries in sys.path' section",

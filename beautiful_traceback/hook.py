@@ -5,7 +5,6 @@ import sys
 import threading
 import types
 import typing as typ
-import warnings
 
 import colorama
 
@@ -67,7 +66,6 @@ def init_excepthook(
 
 
 def install(
-    envvar: typ.Optional[str] = None,
     color: bool = True,
     only_tty: bool = True,
     only_hook_if_default_excepthook: bool = True,
@@ -84,29 +82,14 @@ def install(
     (https://no-color.org/). If NO_COLOR is set (regardless of
     its value), color output will be disabled.
     """
-    if config.ENABLED is False:
+    if not config.env_bool("ENABLED", True):
         return
 
-    if envvar is not None:
-        warnings.warn(
-            "The 'envvar' parameter is deprecated. Use BEAUTIFUL_TRACEBACK_ENABLED=false instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        if os.environ.get(envvar, "0") == "0":
-            return
+    if local_stack_only is None:
+        local_stack_only = config.env_bool("LOCAL_STACK_ONLY", False)
 
-    local_stack_only = (
-        local_stack_only
-        if local_stack_only is not None
-        else (config.LOCAL_STACK_ONLY if config.LOCAL_STACK_ONLY is not None else False)
-    )
-
-    show_aliases = (
-        show_aliases
-        if show_aliases is not None
-        else (config.SHOW_ALIASES if config.SHOW_ALIASES is not None else True)
-    )
+    if show_aliases is None:
+        show_aliases = config.env_bool("SHOW_ALIASES", True)
 
     if "NO_COLOR" in os.environ:
         color = False

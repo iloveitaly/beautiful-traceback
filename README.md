@@ -49,7 +49,7 @@ except ImportError:
 
 Please do not add this code e.g. to your `__init__.py` or any other module that your users may import. They may not want you to mess with how their tracebacks are printed.
 
-If you do feel the overwhelming desire to import the `beautiful_traceback` in code that others might import, use the `BEAUTIFUL_TRACEBACK_ENABLED` environment variable to gate activation:
+If you do feel the overwhelming desire to import the `beautiful_traceback` in code that others might import, use `BEAUTIFUL_TRACEBACK_ENABLED` to gate activation:
 
 ```python
 try:
@@ -59,7 +59,7 @@ except ImportError:
     pass    # no need to fail because of missing dev dependency
 ```
 
-Then set `BEAUTIFUL_TRACEBACK_ENABLED=true` in environments where you want it active. The `envvar` parameter is deprecated in favor of this approach.
+Then set `BEAUTIFUL_TRACEBACK_ENABLED=true` in environments where you want it active.
 
 Note, that the hook is only installed if the existing hook is the default. Any existing hooks that were installed before the call of `beautiful_traceback.install` will be left in place.
 

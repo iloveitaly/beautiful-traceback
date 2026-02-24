@@ -1,8 +1,14 @@
-from environs import Env
+import os
 
-env = Env()
+_PREFIX = "BEAUTIFUL_TRACEBACK_"
+_TRUTHY = frozenset({"1", "true", "yes", "on"})
+_FALSY = frozenset({"0", "false", "no", "off"})
 
-with env.prefixed("BEAUTIFUL_TRACEBACK_"):
-    ENABLED: bool | None = env.bool("ENABLED", default=None)
-    LOCAL_STACK_ONLY: bool | None = env.bool("LOCAL_STACK_ONLY", default=None)
-    SHOW_ALIASES: bool | None = env.bool("SHOW_ALIASES", default=None)
+
+def env_bool(name: str, default: bool) -> bool:
+    val = os.environ.get(_PREFIX + name, "").strip().lower()
+    if val in _TRUTHY:
+        return True
+    if val in _FALSY:
+        return False
+    return default
