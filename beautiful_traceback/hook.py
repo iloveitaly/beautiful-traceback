@@ -37,7 +37,7 @@ def init_excepthook(
     color: bool,
     local_stack_only: bool,
     exclude_patterns: typ.Sequence[str],
-    show_aliases: bool = True,
+    show_aliases: bool = False,
 ) -> typ.Callable:
     def excepthook(
         exc_type: typ.Type[BaseException],
@@ -89,7 +89,7 @@ def install(
         local_stack_only = config.env_bool("LOCAL_STACK_ONLY", False)
 
     if show_aliases is None:
-        show_aliases = config.env_bool("SHOW_ALIASES", True)
+        show_aliases = config.env_bool("SHOW_ALIASES", False)
 
     if "NO_COLOR" in os.environ:
         color = False

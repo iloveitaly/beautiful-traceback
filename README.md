@@ -100,7 +100,7 @@ Customize the plugin in your `pytest.ini` or `pyproject.toml`:
 [tool.pytest.ini_options]
 enable_beautiful_traceback = true                    # Enable/disable the plugin
 enable_beautiful_traceback_local_stack_only = true   # Show only local code (filter libraries)
-beautiful_traceback_show_aliases = true              # Show sys.path aliases section
+beautiful_traceback_show_aliases = false             # Hide sys.path aliases section (default: true)
 beautiful_traceback_exclude_patterns = [             # Regex patterns to drop frames
   "click/core\\.py",
 ]
@@ -161,7 +161,7 @@ beautiful_traceback.install(
     only_tty=True,                         # Only activate for TTY output
     only_hook_if_default_excepthook=True,  # Only install if default hook
     local_stack_only=None,                 # Defaults to BEAUTIFUL_TRACEBACK_LOCAL_STACK_ONLY env var
-    show_aliases=None,                     # Defaults to BEAUTIFUL_TRACEBACK_SHOW_ALIASES env var
+    show_aliases=None,                     # Defaults to BEAUTIFUL_TRACEBACK_SHOW_ALIASES env var (default: false)
     exclude_patterns=["click/core\\.py"],  # Regex patterns to drop frames
 )
 ```
