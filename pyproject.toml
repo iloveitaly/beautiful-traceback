@@ -4,8 +4,11 @@ version = "0.6.0"
 description = "Beautiful, readable Python tracebacks with colors and formatting"
 keywords = ["traceback", "error", "debugging", "formatting"]
 readme = "README.md"
-requires-python = ">=3.11"
-dependencies = ["colorama>=0.4.6"]
+requires-python = ">=3.12"
+dependencies = [
+    "colorama>=0.4.6",
+    "pytest-plugin-utils>=0.1.0",
+]
 authors = [{ name = "Michael Bianco", email = "mike@mikebian.co" }]
 urls = { "Repository" = "https://github.com/iloveitaly/beautiful-traceback" }
 

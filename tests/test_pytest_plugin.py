@@ -19,67 +19,17 @@ def test_plugin_hooks_exist():
     assert callable(pytest_plugin.pytest_exception_interact)
 
 
-def test_get_option_helper():
-    """Test the _get_option helper function."""
-    from unittest.mock import Mock
-
-    config = Mock()
-    config.getoption.side_effect = Exception("Not found")
-    config.getini.return_value = True
-
-    result = pytest_plugin._get_option(config, "test_key")
-    assert result is True
-    config.getini.assert_called_once_with("test_key")
-
-
-def test_get_option_from_getoption():
-    """Test _get_option when getoption works."""
-    from unittest.mock import Mock
-
-    config = Mock()
-    config.getoption.return_value = False
-
-    result = pytest_plugin._get_option(config, "test_key")
-    assert result is False
-    config.getoption.assert_called_once_with("test_key")
-
-
 def test_pytest_addoption():
-    """Test that pytest_addoption registers the correct options."""
-    from unittest.mock import Mock
+    """Test that pytest_addoption delegates to register_pytest_options."""
+    from unittest.mock import Mock, patch
 
     parser = Mock()
-    pytest_plugin.pytest_addoption(parser)
 
-    # Should be called four times (four options)
-    assert parser.addini.call_count == 4
-
-    # Check first call - enable_beautiful_traceback
-    first_call = parser.addini.call_args_list[0]
-    assert first_call[0][0] == "enable_beautiful_traceback"
-    assert "beautiful traceback" in first_call[0][1].lower()
-    assert first_call[1]["type"] == "bool"
-    assert first_call[1]["default"] is True
-
-    # Check second call - enable_beautiful_traceback_local_stack_only
-    second_call = parser.addini.call_args_list[1]
-    assert second_call[0][0] == "enable_beautiful_traceback_local_stack_only"
-    assert "local" in second_call[0][1].lower()
-    assert second_call[1]["type"] == "bool"
-    assert second_call[1]["default"] is True
-
-    # Check third call - beautiful_traceback_exclude_patterns
-    third_call = parser.addini.call_args_list[2]
-    assert third_call[0][0] == "beautiful_traceback_exclude_patterns"
-    assert "exclude" in third_call[0][1].lower()
-    assert third_call[1]["type"] == "linelist"
-    assert third_call[1]["default"] == []
-
-    # Check fourth call - beautiful_traceback_show_aliases
-    fourth_call = parser.addini.call_args_list[3]
-    assert fourth_call[0][0] == "beautiful_traceback_show_aliases"
-    assert fourth_call[1]["type"] == "bool"
-    assert fourth_call[1]["default"] is True
+    with patch(
+        "beautiful_traceback.pytest_plugin.register_pytest_options"
+    ) as mock_register:
+        pytest_plugin.pytest_addoption(parser)
+        mock_register.assert_called_once_with("beautiful_traceback", parser)
 
 
 def test_exc_to_traceback_str_integration():
@@ -242,19 +192,24 @@ def test_plugin_registered_with_pytest(pytestconfig):
 
 
 def test_plugin_config_options_registered(pytestconfig):
-    """Test that config options are registered when plugin loads."""
-    # Try to access the ini options
-    try:
-        enable_bt = pytestconfig.getini("enable_beautiful_traceback")
-        enable_local = pytestconfig.getini(
-            "enable_beautiful_traceback_local_stack_only"
-        )
+    """Test that config options are registered and return correct default values."""
+    from pytest_plugin_utils.config import get_pytest_option
 
-        # Should be boolean values
-        assert isinstance(enable_bt, bool)
-        assert isinstance(enable_local, bool)
-    except ValueError:
-        pytest.skip("Plugin not fully registered - entry point may not be configured")
+    enable_bt = get_pytest_option(
+        "beautiful_traceback",
+        pytestconfig,
+        "enable_beautiful_traceback",
+        type_hint=bool,
+    )
+    enable_local = get_pytest_option(
+        "beautiful_traceback",
+        pytestconfig,
+        "enable_beautiful_traceback_local_stack_only",
+        type_hint=bool,
+    )
+
+    assert enable_bt is True
+    assert enable_local is True
 
 
 if __name__ == "__main__":

@@ -8,28 +8,66 @@ extracts those repr details and appends them to beautiful_traceback output.
 """
 
 import os
-from typing import Any, Generator
+from typing import Generator
 
 import pytest
 from pytest import Config
+from pytest_plugin_utils.config import (
+    get_pytest_option,
+    register_pytest_options,
+    set_pytest_option,
+)
 
 from . import formatting
 from .pytest_assertion import get_exception_message_override
 from .pytest_assertion import get_pytest_assertion_details
 
+assert __package__ is not None
+_namespace: str = __package__
 
-def _get_option(config: Config, key: str) -> Any:
-    val = None
+set_pytest_option(
+    _namespace,
+    "enable_beautiful_traceback",
+    default=True,
+    type_hint=bool,
+    available="all",
+    help="Enable the beautiful traceback plugin",
+)
+set_pytest_option(
+    _namespace,
+    "enable_beautiful_traceback_local_stack_only",
+    default=True,
+    type_hint=bool,
+    available="all",
+    help="Show only local code (filter out library/framework internals)",
+)
+set_pytest_option(
+    _namespace,
+    "beautiful_traceback_exclude_patterns",
+    default=[],
+    type_hint=list[str],
+    available="all",
+    help="Exclude traceback frames that match regex patterns",
+)
+set_pytest_option(
+    _namespace,
+    "beautiful_traceback_show_aliases",
+    default=True,
+    type_hint=bool,
+    available="all",
+    help="Show the 'Aliases for entries in sys.path' section",
+)
 
-    # will throw an exception if option is not set
-    try:
-        val = config.getoption(key)
-    except Exception:
-        pass
 
-    if val is None:
-        val = config.getini(key)
+def _opt_bool(config: Config, key: str) -> bool:
+    val = get_pytest_option(_namespace, config, key, type_hint=bool)
+    assert isinstance(val, bool)
+    return val
 
+
+def _opt_str_list(config: Config, key: str) -> list[str]:
+    val = get_pytest_option(_namespace, config, key, type_hint=list[str])
+    assert isinstance(val, list)
     return val
 
 
@@ -37,18 +75,17 @@ def _format_traceback(excinfo: pytest.ExceptionInfo, config: Config) -> str:
     """Format a traceback with beautiful_traceback styling and pytest details."""
     message_override = get_exception_message_override(excinfo)
     assertion_details = get_pytest_assertion_details(excinfo)
-    exclude_patterns = _get_option(config, "beautiful_traceback_exclude_patterns")
 
     formatted_traceback = formatting.exc_to_traceback_str(
         excinfo.value,
         excinfo.tb,
         color=True,
-        local_stack_only=_get_option(
+        local_stack_only=_opt_bool(
             config, "enable_beautiful_traceback_local_stack_only"
         ),
         exc_msg_override=message_override,
-        exclude_patterns=exclude_patterns,
-        show_aliases=_get_option(config, "beautiful_traceback_show_aliases"),
+        exclude_patterns=_opt_str_list(config, "beautiful_traceback_exclude_patterns"),
+        show_aliases=_opt_bool(config, "beautiful_traceback_show_aliases"),
     )
 
     if assertion_details:
@@ -58,33 +95,7 @@ def _format_traceback(excinfo: pytest.ExceptionInfo, config: Config) -> str:
 
 
 def pytest_addoption(parser) -> None:
-    parser.addini(
-        "enable_beautiful_traceback",
-        "Enable the beautiful traceback plugin",
-        type="bool",
-        default=True,
-    )
-
-    parser.addini(
-        "enable_beautiful_traceback_local_stack_only",
-        "Show only local code (filter out library/framework internals)",
-        type="bool",
-        default=True,
-    )
-
-    parser.addini(
-        "beautiful_traceback_exclude_patterns",
-        "Exclude traceback frames that match regex patterns",
-        type="linelist",
-        default=[],
-    )
-
-    parser.addini(
-        "beautiful_traceback_show_aliases",
-        "Show the 'Aliases for entries in sys.path' section",
-        type="bool",
-        default=True,
-    )
+    register_pytest_options(_namespace, parser)
 
 
 @pytest.hookimpl(hookwrapper=True)
@@ -97,7 +108,7 @@ def pytest_runtest_makereport(item, call) -> Generator[None, None, None]:
     outcome = yield  # type: ignore[misc]
     report = outcome.get_result()  # type: ignore[attr-defined]
 
-    if _get_option(item.config, "enable_beautiful_traceback") and report.failed:
+    if _opt_bool(item.config, "enable_beautiful_traceback") and report.failed:
         report.longrepr = _format_traceback(call.excinfo, item.config)
 
 
@@ -107,5 +118,5 @@ def pytest_exception_interact(node, call, report) -> None:
     This hook runs during collection (e.g., import errors, fixture errors)
     and ensures those errors also use beautiful_traceback formatting.
     """
-    if _get_option(node.config, "enable_beautiful_traceback") and report.failed:
+    if _opt_bool(node.config, "enable_beautiful_traceback") and report.failed:
         report.longrepr = _format_traceback(call.excinfo, node.config)
