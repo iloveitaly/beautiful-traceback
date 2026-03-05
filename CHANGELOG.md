@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.8.0](https://github.com/iloveitaly/beautiful-traceback/compare/v0.7.0...v0.8.0) (2026-03-05)
+
+
+### Features
+
+* **config:** add configure() for global exc_to_json defaults ([59b7e24](https://github.com/iloveitaly/beautiful-traceback/commit/59b7e24941f2cfba9bffd0b9427c49713a0dac2f))
+* **json_formatting:** add notes and syntax error metadata to exception json output ([537eff6](https://github.com/iloveitaly/beautiful-traceback/commit/537eff6ef36713faae807ae0042164be33dda770))
+
+
+### Documentation
+
+* document exc_to_json structured logging output and usage ([f791247](https://github.com/iloveitaly/beautiful-traceback/commit/f791247d3842e648fe4a4c11494580221f6c6a0b))
+
 ## [0.7.0](https://github.com/iloveitaly/beautiful-traceback/compare/v0.6.0...v0.7.0) (2026-03-03)
 
 
