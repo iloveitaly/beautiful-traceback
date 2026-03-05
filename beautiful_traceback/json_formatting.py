@@ -9,6 +9,7 @@ import types
 import typing as typ
 
 from beautiful_traceback.common import ExceptionTraceback
+import beautiful_traceback.config as config
 import beautiful_traceback.formatting as fmt
 
 
@@ -47,8 +48,8 @@ def exc_to_json(
     exc_info: tuple[type[BaseException], BaseException, types.TracebackType | None]
     | BaseException,
     traceback: types.TracebackType | None = None,
-    local_stack_only: bool = False,
-    exclude_patterns: typ.Sequence[str] = (),
+    local_stack_only: bool | None = None,
+    exclude_patterns: typ.Sequence[str] | None = None,
     thread: threading.Thread | None = None,
 ) -> dict[str, typ.Any]:
     """Convert an exception to a JSON-serializable dictionary for structured logging.
@@ -70,6 +71,17 @@ def exc_to_json(
           ("caused_by" for __cause__, "context" for __context__)
         - "thread": thread metadata when thread parameter is provided
     """
+    resolved_local_stack_only: bool = (
+        local_stack_only
+        if local_stack_only is not None
+        else config.get_default("local_stack_only", False)
+    )
+    resolved_exclude_patterns: typ.Sequence[str] = (
+        exclude_patterns
+        if exclude_patterns is not None
+        else config.get_default("exclude_patterns", ())
+    )
+
     if isinstance(exc_info, tuple):
         _exc_type, exc_value, traceback = exc_info
     else:
@@ -103,13 +115,13 @@ def exc_to_json(
         ctx = fmt._init_entries_context(
             entries,
             term_width=fmt.DEFAULT_COLUMNS,
-            exclude_patterns=exclude_patterns,
+            exclude_patterns=resolved_exclude_patterns,
         )
         result = _format_traceback_json(
             ctx.rows,
             main_tb.exc_name,
             main_tb.exc_msg,
-            local_stack_only,
+            resolved_local_stack_only,
         )
 
     result.update(_exc_metadata(main_exc))
@@ -129,13 +141,13 @@ def exc_to_json(
                 ctx = fmt._init_entries_context(
                     entries,
                     term_width=fmt.DEFAULT_COLUMNS,
-                    exclude_patterns=exclude_patterns,
+                    exclude_patterns=resolved_exclude_patterns,
                 )
                 chain_item = _format_traceback_json(
                     ctx.rows,
                     tb.exc_name,
                     tb.exc_msg,
-                    local_stack_only,
+                    resolved_local_stack_only,
                 )
                 chain_item["relationship"] = "caused_by" if tb.is_caused else "context"
             chain_item.update(_exc_metadata(chain_exc))

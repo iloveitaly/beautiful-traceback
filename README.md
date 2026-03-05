@@ -184,6 +184,27 @@ Output shape:
 
 `notes` is only present when `exc.add_note()` was called (Python 3.11+). `syntax_error` is only present for `SyntaxError` exceptions. `chain` is only present when the exception has `__cause__` or `__context__`.
 
+### Global defaults with `configure()`
+
+Use `configure()` to set defaults for all `exc_to_json()` calls instead of passing them on every call:
+
+```python
+from beautiful_traceback import configure, exc_to_json
+
+configure(
+    local_stack_only=True,
+    exclude_patterns=[r"site-packages/"],
+)
+
+# both options are now applied automatically
+try:
+    ...
+except Exception:
+    log.error("unhandled exception", **exc_to_json(sys.exc_info()))
+```
+
+Per-call arguments always override `configure()` defaults. `install()` also calls `configure()` with its resolved options, so `exc_to_json()` inherits the same defaults.
+
 ## Threading Support
 
 `beautiful_traceback.install()` hooks both `sys.excepthook` and `threading.excepthook`, so unhandled exceptions in background threads are automatically formatted.

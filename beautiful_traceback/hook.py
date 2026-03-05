@@ -119,6 +119,11 @@ def install(
             _source_location(threading.excepthook),
         )
 
+    config.configure(
+        local_stack_only=local_stack_only,
+        exclude_patterns=exclude_patterns,
+    )
+
     excepthook = init_excepthook(
         color=color,
         local_stack_only=local_stack_only,

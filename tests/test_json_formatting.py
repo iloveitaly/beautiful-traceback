@@ -4,8 +4,9 @@ import threading
 
 import pytest
 
-from beautiful_traceback import exc_to_json
+from beautiful_traceback import configure, exc_to_json
 from beautiful_traceback import formatting
+import beautiful_traceback.config as bt_config
 
 
 @pytest.fixture
@@ -394,3 +395,68 @@ def test_syntax_error_absent(env_setup):
         result = exc_to_json(exc_info)
 
     assert "syntax_error" not in result
+
+
+@pytest.fixture(autouse=False)
+def clean_config():
+    yield
+    bt_config._config.clear()
+
+
+def test_configure_exclude_patterns(env_setup, clean_config):
+    configure(exclude_patterns=[r"test_json_formatting\.py"])
+
+    result = {}
+    try:
+        raise ValueError("test")
+    except ValueError:
+        exc_info = sys.exc_info()
+        assert exc_info[1] is not None
+        result = exc_to_json(exc_info)
+
+    assert result["frames"] == []
+
+
+def test_configure_exclude_patterns_overridden_per_call(env_setup, clean_config):
+    configure(exclude_patterns=[r"test_json_formatting\.py"])
+
+    result = {}
+    try:
+        raise ValueError("test")
+    except ValueError:
+        exc_info = sys.exc_info()
+        assert exc_info[1] is not None
+        result = exc_to_json(exc_info, exclude_patterns=[])
+
+    assert len(result["frames"]) > 0
+
+
+def test_configure_local_stack_only(env_setup, clean_config):
+    configure(local_stack_only=True)
+
+    result = {}
+    try:
+        raise RuntimeError("local error")
+    except RuntimeError:
+        exc_info = sys.exc_info()
+        assert exc_info[1] is not None
+        result = exc_to_json(exc_info)
+
+    for frame in result["frames"]:
+        assert frame["alias"] == "<pwd>"
+
+
+def test_configure_local_stack_only_overridden_per_call(env_setup, clean_config):
+    configure(local_stack_only=True)
+
+    result_all = {}
+    result_local = {}
+    try:
+        raise RuntimeError("local error")
+    except RuntimeError:
+        exc_info = sys.exc_info()
+        assert exc_info[1] is not None
+        result_all = exc_to_json(exc_info, local_stack_only=False)
+        result_local = exc_to_json(exc_info)
+
+    assert len(result_all["frames"]) >= len(result_local["frames"])
