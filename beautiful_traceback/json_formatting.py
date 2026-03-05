@@ -8,7 +8,7 @@ import threading
 import types
 import typing as typ
 
-from beautiful_traceback.common import ExceptionTraceback, ExceptionTracebackList
+from beautiful_traceback.common import ExceptionTraceback
 import beautiful_traceback.formatting as fmt
 
 
@@ -104,6 +104,7 @@ def exc_to_json(
             "message": str(exc_value),
             "frames": [],
         }
+        result.update(_exc_metadata(exc_value))
         if thread is not None:
             result["thread"] = {
                 "name": thread.name,
@@ -111,7 +112,7 @@ def exc_to_json(
             }
         return result
 
-    main_tb = tracebacks[0]
+    main_tb, main_exc = tracebacks[0]
     entries = list(main_tb.stack_frames)
 
     if not entries:
@@ -133,9 +134,11 @@ def exc_to_json(
             local_stack_only,
         )
 
+    result.update(_exc_metadata(main_exc))
+
     if len(tracebacks) > 1:
         chain = []
-        for tb in tracebacks[1:]:
+        for tb, chain_exc in tracebacks[1:]:
             entries = list(tb.stack_frames)
             if not entries:
                 chain_item = {
@@ -157,6 +160,7 @@ def exc_to_json(
                     local_stack_only,
                 )
                 chain_item["relationship"] = "caused_by" if tb.is_caused else "context"
+            chain_item.update(_exc_metadata(chain_exc))
             chain.append(chain_item)
 
         result["chain"] = chain
@@ -170,18 +174,39 @@ def exc_to_json(
     return result
 
 
+def _exc_metadata(exc: BaseException) -> dict[str, typ.Any]:
+    meta: dict[str, typ.Any] = {}
+
+    notes = getattr(exc, "__notes__", None)
+    if notes:
+        meta["notes"] = notes
+
+    if isinstance(exc, SyntaxError):
+        meta["syntax_error"] = {
+            "filename": exc.filename,
+            "lineno": exc.lineno,
+            "offset": exc.offset,
+            "text": exc.text,
+            "end_lineno": exc.end_lineno,
+            "end_offset": exc.end_offset,
+            "msg": exc.msg,
+        }
+
+    return meta
+
+
 def _exc_to_traceback_list(
     exc_value: BaseException,
     traceback: types.TracebackType | None,
-) -> ExceptionTracebackList:
-    """Convert exception with chaining to a list of Traceback objects.
+) -> list[tuple[ExceptionTraceback, BaseException]]:
+    """Convert exception with chaining to a list of (Traceback, exc) pairs.
 
     Handles __cause__ and __context__ chains, detecting circular references.
     """
-    tracebacks: ExceptionTracebackList = []
+    tracebacks: list[tuple[ExceptionTraceback, BaseException]] = []
     seen_exceptions: set[int] = set()
 
-    current_exc = exc_value
+    current_exc: BaseException | None = exc_value
     current_tb = traceback
     is_caused = False
     is_context = False
@@ -203,9 +228,9 @@ def _exc_to_traceback_list(
             is_caused=is_caused,
             is_context=is_context,
         )
-        tracebacks.append(tb_obj)
+        tracebacks.append((tb_obj, current_exc))
 
-        next_exc = None
+        next_exc: BaseException | None = None
         next_tb = None
 
         if current_exc.__cause__ is not None:

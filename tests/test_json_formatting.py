@@ -313,3 +313,86 @@ def test_thread_metadata_none(env_setup):
 
     assert result["exception"] == "ValueError"
     assert "thread" not in result
+
+
+def test_exc_notes(env_setup):
+    result = {}
+    try:
+        exc = ValueError("with notes")
+        exc.add_note("first note")
+        exc.add_note("second note")
+        raise exc
+    except ValueError:
+        exc_info = sys.exc_info()
+        assert exc_info[1] is not None
+        result = exc_to_json(exc_info[1], exc_info[2])
+
+    assert result["notes"] == ["first note", "second note"]
+
+
+def test_exc_notes_absent(env_setup):
+    result = {}
+    try:
+        raise ValueError("no notes")
+    except ValueError:
+        exc_info = sys.exc_info()
+        assert exc_info[1] is not None
+        result = exc_to_json(exc_info[1], exc_info[2])
+
+    assert "notes" not in result
+
+
+def test_exc_notes_in_chain(env_setup):
+    result = {}
+    try:
+        try:
+            cause = KeyError("cause")
+            cause.add_note("cause note")
+            raise cause
+        except KeyError as e:
+            raise ValueError("wrapper") from e
+    except ValueError:
+        exc_info = sys.exc_info()
+        assert exc_info[1] is not None
+        result = exc_to_json(exc_info[1], exc_info[2])
+
+    assert "notes" not in result
+    assert result["chain"][0]["notes"] == ["cause note"]
+
+
+def test_syntax_error_fields(env_setup):
+    result = {}
+    try:
+        exc = SyntaxError("bad syntax")
+        exc.filename = "script.py"
+        exc.lineno = 10
+        exc.offset = 5
+        exc.text = "bad code here"
+        exc.end_lineno = 10
+        exc.end_offset = 9
+        raise exc
+    except SyntaxError:
+        exc_info = sys.exc_info()
+        assert exc_info[1] is not None
+        result = exc_to_json(exc_info[1], exc_info[2])
+
+    se = result["syntax_error"]
+    assert se["filename"] == "script.py"
+    assert se["lineno"] == 10
+    assert se["offset"] == 5
+    assert se["text"] == "bad code here"
+    assert se["end_lineno"] == 10
+    assert se["end_offset"] == 9
+    assert se["msg"] == "bad syntax"
+
+
+def test_syntax_error_absent(env_setup):
+    result = {}
+    try:
+        raise ValueError("not a syntax error")
+    except ValueError:
+        exc_info = sys.exc_info()
+        assert exc_info[1] is not None
+        result = exc_to_json(exc_info[1], exc_info[2])
+
+    assert "syntax_error" not in result
