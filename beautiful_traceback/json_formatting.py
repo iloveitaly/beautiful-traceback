@@ -44,7 +44,8 @@ def _format_traceback_json(
 
 
 def exc_to_json(
-    exc_info: tuple[type[BaseException], BaseException, types.TracebackType | None] | BaseException,
+    exc_info: tuple[type[BaseException], BaseException, types.TracebackType | None]
+    | BaseException,
     traceback: types.TracebackType | None = None,
     local_stack_only: bool = False,
     exclude_patterns: typ.Sequence[str] = (),
