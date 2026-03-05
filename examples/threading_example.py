@@ -60,11 +60,10 @@ def json_logging_task():
         # Capture exception info for JSON logging
         exc_info = sys.exc_info()
 
-        if exc_info[1] is not None:
+        if exc_info[0] is not None:
             # Convert to JSON with thread metadata
             json_output = exc_to_json(
-                exc_info[1],
-                exc_info[2],
+                exc_info,
                 thread=threading.current_thread(),
                 local_stack_only=True,
             )

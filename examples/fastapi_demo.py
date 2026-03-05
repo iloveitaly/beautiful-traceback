@@ -50,7 +50,7 @@ app = FastAPI(title="Beautiful Traceback JSON Demo")
 async def exception_handler(request, exc):
     """Global exception handler that logs exceptions as JSON."""
     exc_info = sys.exc_info()
-    json_traceback = exc_to_json(exc_info[1], exc_info[2], local_stack_only=False)
+    json_traceback = exc_to_json(exc_info, local_stack_only=False)
 
     log.error("unhandled exception", extra={"traceback": json_traceback})
 
@@ -114,12 +114,8 @@ async def local_only_error():
         return data["missing_key"]
     except Exception:
         exc_info = sys.exc_info()
-        json_traceback_full = exc_to_json(
-            exc_info[1], exc_info[2], local_stack_only=False
-        )
-        json_traceback_local = exc_to_json(
-            exc_info[1], exc_info[2], local_stack_only=True
-        )
+        json_traceback_full = exc_to_json(exc_info, local_stack_only=False)
+        json_traceback_local = exc_to_json(exc_info, local_stack_only=True)
 
         return {
             "full_traceback": json_traceback_full,

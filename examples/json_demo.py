@@ -29,7 +29,7 @@ def main():
         raise ValueError("Something went wrong")
     except ValueError:
         exc_info = sys.exc_info()
-        result = exc_to_json(exc_info[1], exc_info[2])
+        result = exc_to_json(exc_info)
         print(json.dumps(result, indent=2))
 
     print("\n=== Exception Chain ===")
@@ -37,7 +37,7 @@ def main():
         handle_request("charlie")
     except ValueError:
         exc_info = sys.exc_info()
-        result = exc_to_json(exc_info[1], exc_info[2])
+        result = exc_to_json(exc_info)
         print(json.dumps(result, indent=2))
 
     print("\n=== With local_stack_only=True ===")
@@ -45,7 +45,7 @@ def main():
         handle_request("charlie")
     except ValueError:
         exc_info = sys.exc_info()
-        result = exc_to_json(exc_info[1], exc_info[2], local_stack_only=True)
+        result = exc_to_json(exc_info, local_stack_only=True)
         print(json.dumps(result, indent=2))
 
 
