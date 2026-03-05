@@ -144,11 +144,17 @@ This allows you to write simpler patterns like `^_pytest/` instead of needing to
 import sys
 from beautiful_traceback import exc_to_json
 
+# pass sys.exc_info() directly
 try:
     ...
 except Exception:
-    exc_type, exc_value, tb = sys.exc_info()
-    log.error("unhandled exception", **exc_to_json(exc_value, tb))
+    log.error("unhandled exception", **exc_to_json(sys.exc_info()))
+
+# or pass the exception and traceback separately
+try:
+    ...
+except Exception as e:
+    log.error("unhandled exception", **exc_to_json(e, e.__traceback__))
 ```
 
 Output shape:

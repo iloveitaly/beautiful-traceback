@@ -32,7 +32,7 @@ def test_simple_exception(env_setup):
     except ValueError:
         exc_info = sys.exc_info()
         assert exc_info[1] is not None
-        result = exc_to_json(exc_info[1], exc_info[2])
+        result = exc_to_json(exc_info)
 
     assert result["exception"] == "ValueError"
     assert result["message"] == "test error message"
@@ -62,7 +62,7 @@ def test_exception_chain_with_cause(env_setup):
     except ValueError:
         exc_info = sys.exc_info()
         assert exc_info[1] is not None
-        result = exc_to_json(exc_info[1], exc_info[2])
+        result = exc_to_json(exc_info)
 
     assert result["exception"] == "ValueError"
     assert result["message"] == "wrapper error"
@@ -86,7 +86,7 @@ def test_exception_chain_with_context(env_setup):
     except ValueError:
         exc_info = sys.exc_info()
         assert exc_info[1] is not None
-        result = exc_to_json(exc_info[1], exc_info[2])
+        result = exc_to_json(exc_info)
 
     assert result["exception"] == "ValueError"
     assert "chain" in result
@@ -109,7 +109,7 @@ def test_local_stack_only_false(env_setup):
     except RuntimeError:
         exc_info = sys.exc_info()
         assert exc_info[1] is not None
-        result = exc_to_json(exc_info[1], exc_info[2], local_stack_only=False)
+        result = exc_to_json(exc_info, local_stack_only=False)
 
     assert len(result["frames"]) > 0
 
@@ -122,8 +122,8 @@ def test_local_stack_only_true(env_setup):
     except RuntimeError:
         exc_info = sys.exc_info()
         assert exc_info[1] is not None
-        result_all = exc_to_json(exc_info[1], exc_info[2], local_stack_only=False)
-        result_local = exc_to_json(exc_info[1], exc_info[2], local_stack_only=True)
+        result_all = exc_to_json(exc_info, local_stack_only=False)
+        result_local = exc_to_json(exc_info, local_stack_only=True)
 
     for frame in result_local["frames"]:
         assert frame["alias"] == "<pwd>"
@@ -139,8 +139,7 @@ def test_exclude_patterns(env_setup):
         exc_info = sys.exc_info()
         assert exc_info[1] is not None
         result = exc_to_json(
-            exc_info[1],
-            exc_info[2],
+            exc_info,
             exclude_patterns=[r"test_json_formatting\.py"],
         )
 
@@ -158,8 +157,7 @@ def test_exclude_patterns_chain(env_setup):
         exc_info = sys.exc_info()
         assert exc_info[1] is not None
         result = exc_to_json(
-            exc_info[1],
-            exc_info[2],
+            exc_info,
             exclude_patterns=[r"test_json_formatting\.py"],
         )
 
@@ -175,7 +173,7 @@ def test_aliased_paths_not_full_paths(env_setup):
     except ValueError:
         exc_info = sys.exc_info()
         assert exc_info[1] is not None
-        result = exc_to_json(exc_info[1], exc_info[2])
+        result = exc_to_json(exc_info)
 
     for frame in result["frames"]:
         module = frame["module"]
@@ -194,7 +192,7 @@ def test_circular_exception_reference(env_setup):
     except ValueError:
         exc_info = sys.exc_info()
         assert exc_info[1] is not None
-        result = exc_to_json(exc_info[1], exc_info[2])
+        result = exc_to_json(exc_info)
 
     assert result["exception"] == "ValueError"
     assert "chain" in result
@@ -202,7 +200,7 @@ def test_circular_exception_reference(env_setup):
 
 def test_exception_with_no_traceback(env_setup):
     exc = ValueError("no traceback")
-    result = exc_to_json(exc, None)
+    result = exc_to_json((ValueError, exc, None))
 
     assert result["exception"] == "ValueError"
     assert result["message"] == "no traceback"
@@ -216,7 +214,7 @@ def test_frame_structure(env_setup):
     except ValueError:
         exc_info = sys.exc_info()
         assert exc_info[1] is not None
-        result = exc_to_json(exc_info[1], exc_info[2])
+        result = exc_to_json(exc_info)
 
     frame = result["frames"][0]
 
@@ -235,7 +233,7 @@ def test_multiple_alias_types(env_setup):
     except ValueError:
         exc_info = sys.exc_info()
         assert exc_info[1] is not None
-        result = exc_to_json(exc_info[1], exc_info[2], local_stack_only=False)
+        result = exc_to_json(exc_info, local_stack_only=False)
 
     aliases_found = {frame["alias"] for frame in result["frames"]}
     assert "<pwd>" in aliases_found
@@ -256,7 +254,7 @@ def test_local_stack_only_filters_chain(env_setup):
     except ValueError:
         exc_info = sys.exc_info()
         assert exc_info[1] is not None
-        result = exc_to_json(exc_info[1], exc_info[2], local_stack_only=True)
+        result = exc_to_json(exc_info, local_stack_only=True)
 
     for frame in result["frames"]:
         assert frame["alias"] == "<pwd>"
@@ -276,7 +274,7 @@ def test_thread_metadata(env_setup):
         assert exc_info[1] is not None
 
         thread = threading.Thread(name="TestWorker", daemon=False)
-        result = exc_to_json(exc_info[1], exc_info[2], thread=thread)
+        result = exc_to_json(exc_info, thread=thread)
 
     assert result["exception"] == "ValueError"
     assert result["message"] == "test error in thread"
@@ -294,7 +292,7 @@ def test_thread_metadata_daemon(env_setup):
         assert exc_info[1] is not None
 
         thread = threading.Thread(name="DaemonWorker", daemon=True)
-        result = exc_to_json(exc_info[1], exc_info[2], thread=thread)
+        result = exc_to_json(exc_info, thread=thread)
 
     assert result["exception"] == "RuntimeError"
     assert "thread" in result
@@ -309,7 +307,7 @@ def test_thread_metadata_none(env_setup):
     except ValueError:
         exc_info = sys.exc_info()
         assert exc_info[1] is not None
-        result = exc_to_json(exc_info[1], exc_info[2], thread=None)
+        result = exc_to_json(exc_info, thread=None)
 
     assert result["exception"] == "ValueError"
     assert "thread" not in result
@@ -325,7 +323,7 @@ def test_exc_notes(env_setup):
     except ValueError:
         exc_info = sys.exc_info()
         assert exc_info[1] is not None
-        result = exc_to_json(exc_info[1], exc_info[2])
+        result = exc_to_json(exc_info)
 
     assert result["notes"] == ["first note", "second note"]
 
@@ -337,7 +335,7 @@ def test_exc_notes_absent(env_setup):
     except ValueError:
         exc_info = sys.exc_info()
         assert exc_info[1] is not None
-        result = exc_to_json(exc_info[1], exc_info[2])
+        result = exc_to_json(exc_info)
 
     assert "notes" not in result
 
@@ -354,7 +352,7 @@ def test_exc_notes_in_chain(env_setup):
     except ValueError:
         exc_info = sys.exc_info()
         assert exc_info[1] is not None
-        result = exc_to_json(exc_info[1], exc_info[2])
+        result = exc_to_json(exc_info)
 
     assert "notes" not in result
     assert result["chain"][0]["notes"] == ["cause note"]
@@ -374,7 +372,7 @@ def test_syntax_error_fields(env_setup):
     except SyntaxError:
         exc_info = sys.exc_info()
         assert exc_info[1] is not None
-        result = exc_to_json(exc_info[1], exc_info[2])
+        result = exc_to_json(exc_info)
 
     se = result["syntax_error"]
     assert se["filename"] == "script.py"
@@ -393,6 +391,6 @@ def test_syntax_error_absent(env_setup):
     except ValueError:
         exc_info = sys.exc_info()
         assert exc_info[1] is not None
-        result = exc_to_json(exc_info[1], exc_info[2])
+        result = exc_to_json(exc_info)
 
     assert "syntax_error" not in result

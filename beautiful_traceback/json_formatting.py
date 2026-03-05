@@ -44,8 +44,8 @@ def _format_traceback_json(
 
 
 def exc_to_json(
-    exc_value: BaseException,
-    traceback: types.TracebackType | None,
+    exc_info: tuple[type[BaseException], BaseException, types.TracebackType | None] | BaseException,
+    traceback: types.TracebackType | None = None,
     local_stack_only: bool = False,
     exclude_patterns: typ.Sequence[str] = (),
     thread: threading.Thread | None = None,
@@ -53,8 +53,10 @@ def exc_to_json(
     """Convert an exception to a JSON-serializable dictionary for structured logging.
 
     Args:
-        exc_value: The exception instance.
-        traceback: The traceback object (may be None).
+        exc_info: Either a (exc_type, exc_value, traceback) tuple as returned by
+            sys.exc_info(), or the exception instance directly (in which case
+            traceback must be passed as the second argument).
+        traceback: The traceback object. Only used when exc_info is a BaseException instance.
         local_stack_only: Only include frames from <pwd>, filtering out library frames.
         exclude_patterns: Regex patterns matched against frame paths to drop frames.
         thread: If provided, adds {"thread": {"name": ..., "daemon": ...}} to output.
@@ -67,6 +69,10 @@ def exc_to_json(
           ("caused_by" for __cause__, "context" for __context__)
         - "thread": thread metadata when thread parameter is provided
     """
+    if isinstance(exc_info, tuple):
+        _exc_type, exc_value, traceback = exc_info
+    else:
+        exc_value = exc_info
     tracebacks = _exc_to_traceback_list(exc_value, traceback)
 
     if not tracebacks:
