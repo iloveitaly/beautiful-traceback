@@ -50,51 +50,22 @@ def exc_to_json(
     exclude_patterns: typ.Sequence[str] = (),
     thread: threading.Thread | None = None,
 ) -> dict[str, typ.Any]:
-    """Convert an exception to a JSON-serializable dictionary.
-
-    This function is designed for production JSON logging. It always uses
-    aliased paths (e.g., <pwd>/app.py, <site>/requests/sessions.py) and
-    respects the local_stack_only flag to filter library frames.
+    """Convert an exception to a JSON-serializable dictionary for structured logging.
 
     Args:
-        exc_value: The exception instance
-        traceback: The traceback object (can be None)
-        local_stack_only: If True, only include frames from <pwd> (current directory)
+        exc_value: The exception instance.
+        traceback: The traceback object (may be None).
+        local_stack_only: Only include frames from <pwd>, filtering out library frames.
+        exclude_patterns: Regex patterns matched against frame paths to drop frames.
+        thread: If provided, adds {"thread": {"name": ..., "daemon": ...}} to output.
 
     Returns:
-        A dictionary with exception details and stack frames, including any
-        chained exceptions. Structure:
-        {
-            "exception": "ExceptionName",
-            "message": "exception message",
-            "frames": [
-                {
-                    "module": "app.py",
-                    "alias": "<pwd>",
-                    "function": "function_name",
-                    "lineno": 42
-                },
-                ...
-            ],
-            "chain": [  # optional, if exception has __cause__ or __context__
-                {
-                    "exception": "CauseName",
-                    "message": "cause message",
-                    "relationship": "caused_by",  # or "context"
-                    "frames": [...]
-                }
-            ]
-        }
-
-    Example:
-        >>> import sys
-        >>> try:
-        ...     raise ValueError("test error")
-        ... except ValueError:
-        ...     exc_info = sys.exc_info()
-        ...     result = exc_to_json(exc_info[1], exc_info[2])
-        ...     print(result["exception"])
-        ValueError
+        Dict with keys: "exception", "message", "frames". Optional keys:
+        - "notes": list of strings added via exc.add_note() (Python 3.11+)
+        - "syntax_error": dict of SyntaxError attributes (filename, lineno, offset, etc.)
+        - "chain": list of chained exception dicts, each with a "relationship" key
+          ("caused_by" for __cause__, "context" for __context__)
+        - "thread": thread metadata when thread parameter is provided
     """
     tracebacks = _exc_to_traceback_list(exc_value, traceback)
 

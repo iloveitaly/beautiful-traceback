@@ -136,6 +136,48 @@ beautiful_traceback_exclude_patterns = [
 
 This allows you to write simpler patterns like `^_pytest/` instead of needing to match the full site-packages path.
 
+## JSON / Structured Logging
+
+`exc_to_json()` converts an exception to a JSON-serializable dict, suitable for production log pipelines (structlog, python-json-logger, etc.).
+
+```python
+import sys
+from beautiful_traceback import exc_to_json
+
+try:
+    ...
+except Exception:
+    exc_type, exc_value, tb = sys.exc_info()
+    log.error("unhandled exception", **exc_to_json(exc_value, tb))
+```
+
+Output shape:
+
+```json
+{
+  "exception": "ValueError",
+  "message": "something went wrong",
+  "frames": [
+    {"module": "app/service.py", "alias": "<pwd>", "function": "process", "lineno": 42}
+  ],
+  "notes": ["added via exc.add_note(...)"],
+  "syntax_error": {
+    "filename": "script.py", "lineno": 10, "offset": 5, "text": "bad code",
+    "end_lineno": 10, "end_offset": 9, "msg": "invalid syntax"
+  },
+  "chain": [
+    {
+      "exception": "KeyError",
+      "message": "'missing_key'",
+      "relationship": "caused_by",
+      "frames": [...]
+    }
+  ]
+}
+```
+
+`notes` is only present when `exc.add_note()` was called (Python 3.11+). `syntax_error` is only present for `SyntaxError` exceptions. `chain` is only present when the exception has `__cause__` or `__context__`.
+
 ## Threading Support
 
 `beautiful_traceback.install()` hooks both `sys.excepthook` and `threading.excepthook`, so unhandled exceptions in background threads are automatically formatted.
