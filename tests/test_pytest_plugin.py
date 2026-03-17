@@ -209,7 +209,15 @@ def test_plugin_config_options_registered(pytestconfig):
     )
 
     assert enable_bt is True
-    assert enable_local is True
+    assert enable_local is None
+
+    # Check that _opt_bool falls back correctly
+    assert (
+        pytest_plugin._opt_bool(
+            pytestconfig, "enable_beautiful_traceback_local_stack_only", fallback=True
+        )
+        is True
+    )
 
 
 if __name__ == "__main__":

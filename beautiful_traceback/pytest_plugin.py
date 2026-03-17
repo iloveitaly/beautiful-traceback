@@ -38,7 +38,7 @@ set_pytest_option(
 set_pytest_option(
     _namespace,
     "enable_beautiful_traceback_local_stack_only",
-    default=config.env_bool("LOCAL_STACK_ONLY", True),
+    default=None,
     type_hint=bool,
     available="all",
     help="Show only local code (filter out library/framework internals)",
@@ -46,7 +46,7 @@ set_pytest_option(
 set_pytest_option(
     _namespace,
     "beautiful_traceback_exclude_patterns",
-    default=[],
+    default=None,
     type_hint=list[str],
     available="all",
     help="Exclude traceback frames that match regex patterns",
@@ -54,40 +54,60 @@ set_pytest_option(
 set_pytest_option(
     _namespace,
     "beautiful_traceback_show_aliases",
-    default=config.env_bool("SHOW_ALIASES", True),
+    default=None,
     type_hint=bool,
     available="all",
     help="Show the 'Aliases for entries in sys.path' section",
 )
 
 
-def _opt_bool(config: Config, key: str) -> bool:
-    val = get_pytest_option(_namespace, config, key, type_hint=bool)
-    assert isinstance(val, bool)
-    return val
+def _opt_bool(config_obj: Config, key: str, fallback: bool = False) -> bool:
+    val = get_pytest_option(_namespace, config_obj, key, type_hint=bool)
+    if val is not None:
+        assert isinstance(val, bool)
+        return val
+    return fallback
 
 
-def _opt_str_list(config: Config, key: str) -> list[str]:
-    val = get_pytest_option(_namespace, config, key, type_hint=list[str])
-    assert isinstance(val, list)
-    return val
+def _opt_str_list(config_obj: Config, key: str, fallback: list[str]) -> list[str]:
+    val = get_pytest_option(_namespace, config_obj, key, type_hint=list[str])
+    if val is not None:
+        assert isinstance(val, list)
+        return val
+    return fallback
 
 
-def _format_traceback(excinfo: pytest.ExceptionInfo, config: Config) -> str:
+def _format_traceback(excinfo: pytest.ExceptionInfo, config_obj: Config) -> str:
     """Format a traceback with beautiful_traceback styling and pytest details."""
     message_override = get_exception_message_override(excinfo)
     assertion_details = get_pytest_assertion_details(excinfo)
+
+    local_stack_only_fallback = config.get_default(
+        "local_stack_only", config.env_bool("LOCAL_STACK_ONLY", True)
+    )
+    exclude_patterns_fallback = config.get_default("exclude_patterns", [])
+    show_aliases_fallback = config.get_default(
+        "show_aliases", config.env_bool("SHOW_ALIASES", True)
+    )
 
     formatted_traceback = formatting.exc_to_traceback_str(
         excinfo.value,
         excinfo.tb,
         color=True,
         local_stack_only=_opt_bool(
-            config, "enable_beautiful_traceback_local_stack_only"
+            config_obj,
+            "enable_beautiful_traceback_local_stack_only",
+            local_stack_only_fallback,
         ),
         exc_msg_override=message_override,
-        exclude_patterns=_opt_str_list(config, "beautiful_traceback_exclude_patterns"),
-        show_aliases=_opt_bool(config, "beautiful_traceback_show_aliases"),
+        exclude_patterns=_opt_str_list(
+            config_obj,
+            "beautiful_traceback_exclude_patterns",
+            exclude_patterns_fallback,
+        ),
+        show_aliases=_opt_bool(
+            config_obj, "beautiful_traceback_show_aliases", show_aliases_fallback
+        ),
     )
 
     if assertion_details:

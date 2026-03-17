@@ -70,7 +70,7 @@ def install(
     only_tty: bool = True,
     only_hook_if_default_excepthook: bool = True,
     local_stack_only: bool | None = None,
-    exclude_patterns: typ.Sequence[str] = (),
+    exclude_patterns: typ.Sequence[str] | None = None,
     show_aliases: bool | None = None,
 ) -> None:
     """Hook the current excepthook to the beautiful_traceback.
@@ -84,12 +84,6 @@ def install(
     """
     if not config.env_bool("ENABLED", True):
         return
-
-    if local_stack_only is None:
-        local_stack_only = config.env_bool("LOCAL_STACK_ONLY", False)
-
-    if show_aliases is None:
-        show_aliases = config.env_bool("SHOW_ALIASES", False)
 
     if "NO_COLOR" in os.environ:
         color = False
@@ -119,16 +113,27 @@ def install(
             _source_location(threading.excepthook),
         )
 
-    config.configure(
-        local_stack_only=local_stack_only,
-        exclude_patterns=exclude_patterns,
+    if local_stack_only is not None or exclude_patterns is not None:
+        config.configure(
+            local_stack_only=local_stack_only,
+            exclude_patterns=exclude_patterns,
+        )
+
+    resolved_local_stack_only = config.get_default(
+        "local_stack_only", config.env_bool("LOCAL_STACK_ONLY", False)
+    )
+    resolved_exclude_patterns = config.get_default("exclude_patterns", ())
+    resolved_show_aliases = (
+        show_aliases
+        if show_aliases is not None
+        else config.get_default("show_aliases", config.env_bool("SHOW_ALIASES", False))
     )
 
     excepthook = init_excepthook(
         color=color,
-        local_stack_only=local_stack_only,
-        exclude_patterns=exclude_patterns,
-        show_aliases=show_aliases,
+        local_stack_only=resolved_local_stack_only,
+        exclude_patterns=resolved_exclude_patterns,
+        show_aliases=resolved_show_aliases,
     )
     sys.excepthook = excepthook
 
