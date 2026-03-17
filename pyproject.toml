@@ -16,7 +16,7 @@ urls = { "Repository" = "https://github.com/iloveitaly/beautiful-traceback" }
 beautiful-traceback = "beautiful_traceback.cli:main"
 
 [build-system]
-requires = ["uv_build>=0.9.0,<0.11.0"]
+requires = ["uv_build>=0.10.0"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]
@@ -24,13 +24,30 @@ build-backend = "uv_build"
 module-root = ""
 
 [dependency-groups]
-dev = ["pytest>=8.3.3", "pyright[nodejs]>=1.1.380", "ruff>=0.8.0"]
+dev = [
+    "pytest>=8.3.4",
+    "pyright[nodejs]>=1.1.408",
+    "ruff>=0.15.0",
+    "coverage>=7.13.4",
+    "pytest-cov>=7.0.0",
+    "covdefaults>=2.3.0",
+]
 
 [project.entry-points.pytest11]
 beautiful_traceback = "beautiful_traceback.pytest_plugin"
 
 [tool.pyright]
 exclude = ["playground/", "tmp/", ".venv/", "tests/", "examples/"]
+
+[tool.pytest.ini_options]
+addopts = "--cov --cov-report=term-missing --cov-report=html:tmp/htmlcov"
+
+[tool.coverage.run]
+plugins = ["covdefaults"]
+source = ["beautiful_traceback"]
+
+[tool.coverage.report]
+fail_under = 50
 
 [tool.ruff]
 extend-exclude = ["playground.py", "playground/"]
