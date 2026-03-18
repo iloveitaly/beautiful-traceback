@@ -31,5 +31,10 @@ def configure(
         _config["exclude_patterns"] = exclude_patterns
 
 
+def get_config() -> dict[str, typ.Any]:
+    """Retrieve a copy of the current global configuration."""
+    return _config.copy()
+
+
 def get_default(key: str, fallback: typ.Any) -> typ.Any:
     return _config.get(key, fallback)

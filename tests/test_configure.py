@@ -51,3 +51,23 @@ def test_get_default_returns_fallback_when_not_configured():
 def test_configure_no_args_does_not_mutate_config():
     configure()
     assert bt_config._config == {}
+
+
+def test_get_config_returns_copy():
+    configure(local_stack_only=True, exclude_patterns=["a"])
+    config_copy = bt_config.get_config()
+    assert config_copy["local_stack_only"] is True
+    assert config_copy["exclude_patterns"] == ["a"]
+
+    # Mutate the copy
+    config_copy["local_stack_only"] = False
+
+    # Ensure original is unchanged
+    assert bt_config._config["local_stack_only"] is True
+
+
+def test_get_config_is_exposed():
+    import beautiful_traceback
+
+    assert hasattr(beautiful_traceback, "get_config")
+    assert beautiful_traceback.get_config is bt_config.get_config
