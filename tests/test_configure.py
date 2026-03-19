@@ -108,6 +108,20 @@ def test_install_persists_show_aliases_config():
         beautiful_traceback.uninstall()
 
 
+def test_install_preserves_existing_config_for_omitted_options():
+    import beautiful_traceback
+
+    configure(local_stack_only=True)
+
+    beautiful_traceback.install(only_tty=False, show_aliases=True)
+
+    try:
+        assert bt_config.get_default("local_stack_only", False) is True
+        assert bt_config.get_default("show_aliases", False) is True
+    finally:
+        beautiful_traceback.uninstall()
+
+
 def test_get_config_is_exposed():
     import beautiful_traceback
 
