@@ -184,9 +184,83 @@ Output shape:
 
 `notes` is only present when `exc.add_note()` was called (Python 3.11+). `syntax_error` is only present for `SyntaxError` exceptions. `chain` is only present when the exception has `__cause__` or `__context__`.
 
+### Exclude frames by module or file path
+
+If your production logs include frames like these:
+
+```json
+{
+  "alias": "<site>",
+  "function": "__call__",
+  "lineno": 60,
+  "module": "uvicorn/middleware/proxy_headers.py"
+}
+{
+  "alias": "<site>",
+  "function": "__call__",
+  "lineno": 1160,
+  "module": "fastapi/applications.py"
+}
+```
+
+you can exclude them with `exclude_patterns` by matching either the short `module` value, the full file path, or the alias-prefixed rendered line:
+
+```python
+import sys
+
+from beautiful_traceback import exc_to_json
+
+
+try:
+  ...
+except Exception:
+  payload = exc_to_json(
+    sys.exc_info(),
+    exclude_patterns=[
+      # Match the short module value from JSON output.
+      r"^uvicorn/middleware/proxy_headers\.py$",
+      r"^fastapi/applications\.py$",
+
+      # Match the absolute file path on disk.
+      r"/site-packages/fastapi/routing\.py$",
+      r"/site-packages/sentry_sdk/integrations/starlette\.py$",
+
+      # Or match a specific deployment path if you want to be exact.
+      r"^/app/\.venv/lib/python3\.13/site-packages/uvicorn/middleware/proxy_headers\.py$",
+    ],
+  )
+```
+
+The matcher checks all of these representations for each frame:
+
+- `uvicorn/middleware/proxy_headers.py`
+  This is the short module path, relative to the alias root such as `<site>` or `<pwd>`.
+- `/app/.venv/lib/python3.13/site-packages/uvicorn/middleware/proxy_headers.py`
+  This is the full absolute path on disk.
+- `<site> uvicorn/middleware/proxy_headers.py:60 __call__ ...`
+  This is the rendered traceback line with the alias and short path.
+- `<site> /app/.venv/lib/python3.13/site-packages/uvicorn/middleware/proxy_headers.py:60 __call__ ...`
+  This is the rendered traceback line with the alias and full path.
+
+That means you can write broad patterns like `^fastapi/` for alias-relative matching, `/site-packages/fastapi/` for absolute path matching, or `^<site> .*fastapi/` if you want to require a specific alias.
+
+The same patterns also work with `install()` and `configure()`:
+
+
+If you want to drop a whole integration layer, match the module prefix instead:
+
+```python
+exclude_patterns = [
+  r"^uvicorn/",
+  r"^fastapi/",
+  r"^starlette/",
+  r"^sentry_sdk/integrations/",
+]
+```
+
 ### Global defaults with `configure()`
 
-Use `configure()` to set defaults for all `exc_to_json()` calls instead of passing them on every call:
+Use `configure()` to set shared defaults for traceback rendering helpers instead of passing them on every call:
 
 ```python
 from beautiful_traceback import configure, exc_to_json
@@ -194,16 +268,17 @@ from beautiful_traceback import configure, exc_to_json
 configure(
     local_stack_only=True,
     exclude_patterns=[r"site-packages/"],
+  show_aliases=False,
 )
 
-# both options are now applied automatically
+# these options are now applied automatically
 try:
     ...
 except Exception:
     log.error("unhandled exception", **exc_to_json(sys.exc_info()))
 ```
 
-Per-call arguments always override `configure()` defaults. `install()` also calls `configure()` with its resolved options, so `exc_to_json()` inherits the same defaults.
+Per-call arguments always override `configure()` defaults. `install()` also calls `configure()` with its explicit formatting options, so shared defaults stay aligned.
 
 ## Threading Support
 
