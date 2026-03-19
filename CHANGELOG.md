@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.9.0](https://github.com/iloveitaly/beautiful-traceback/compare/v0.8.0...v0.9.0) (2026-03-19)
+
+
+### Features
+
+* add support for global show_aliases configuration ([4ce996d](https://github.com/iloveitaly/beautiful-traceback/commit/4ce996de157099c034771a2e90c252f63c117828))
+
+
+### Documentation
+
+* add documentation for excluding traceback frames ([98d62eb](https://github.com/iloveitaly/beautiful-traceback/commit/98d62eb5dde507a3130cc0a31b89f46ff6254339))
+
 ## [0.8.0](https://github.com/iloveitaly/beautiful-traceback/compare/v0.7.0...v0.8.0) (2026-03-18)
 
 
