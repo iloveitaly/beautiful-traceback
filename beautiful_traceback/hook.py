@@ -113,10 +113,16 @@ def install(
             _source_location(threading.excepthook),
         )
 
-    if local_stack_only is not None or exclude_patterns is not None:
+    # configure settings passed to install globally to they stick around
+    if (
+        local_stack_only is not None
+        or exclude_patterns is not None
+        or show_aliases is not None
+    ):
         config.configure(
             local_stack_only=local_stack_only,
             exclude_patterns=exclude_patterns,
+            show_aliases=show_aliases,
         )
 
     resolved_local_stack_only = config.get_default(

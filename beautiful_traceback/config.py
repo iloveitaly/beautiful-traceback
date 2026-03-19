@@ -20,8 +20,9 @@ def env_bool(name: str, default: bool) -> bool:
 def configure(
     local_stack_only: bool | None = None,
     exclude_patterns: typ.Sequence[str] | None = None,
+    show_aliases: bool | None = None,
 ) -> None:
-    """Set global defaults for exc_to_json().
+    """Set global defaults for traceback formatting helpers.
 
     Per-call arguments always override these defaults.
     """
@@ -29,6 +30,8 @@ def configure(
         _config["local_stack_only"] = local_stack_only
     if exclude_patterns is not None:
         _config["exclude_patterns"] = exclude_patterns
+    if show_aliases is not None:
+        _config["show_aliases"] = show_aliases
 
 
 def get_config() -> dict[str, typ.Any]:
