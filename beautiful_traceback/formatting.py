@@ -1,12 +1,12 @@
+import collections
+import logging
 import os
 import re
+import subprocess as sp
 import sys
+import traceback as tb
 import types
 import typing as typ
-import logging
-import traceback as tb
-import subprocess as sp
-import collections
 
 import colorama
 
@@ -141,14 +141,17 @@ def _compile_exclude_patterns(
 def _row_matches_exclude_patterns(
     row: Row, exclude_patterns: typ.Sequence[re.Pattern[str]]
 ) -> bool:
+    """
+    Try multiple representations so patterns can match different parts:
+
+    1. short_module: "_pytest/runner.py" (aliased path without prefix)
+    2. full_module: "/path/to/site-packages/_pytest/runner.py" (absolute path)
+    3. haystack_full: "<site> /path/to/site-packages/_pytest/runner.py:353 from_call result: ..."
+    4. haystack_short: "<site> _pytest/runner.py:353 from_call result: ..."
+    """
     if not exclude_patterns:
         return False
 
-    # Try multiple representations so patterns can match different parts:
-    # 1. short_module: "_pytest/runner.py" (aliased path without prefix)
-    # 2. full_module: "/path/to/site-packages/_pytest/runner.py" (absolute path)
-    # 3. haystack_full: "<site> /path/to/site-packages/_pytest/runner.py:353 from_call result: ..."
-    # 4. haystack_short: "<site> _pytest/runner.py:353 from_call result: ..."
     haystack_full = (
         f"{row.alias} {row.full_module}:{row.lineno} {row.call} {row.context}"
     )
