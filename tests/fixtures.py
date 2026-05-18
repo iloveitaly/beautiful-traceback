@@ -1,4 +1,3 @@
-
 from beautiful_traceback.common import ExceptionTraceback, StackFrameEntry
 
 BASIC_TRACEBACK_STR = """
