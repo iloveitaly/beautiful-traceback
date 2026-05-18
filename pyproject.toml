@@ -12,8 +12,10 @@ dependencies = [
 authors = [{ name = "Michael Bianco", email = "mike@mikebian.co" }]
 urls = { "Repository" = "https://github.com/iloveitaly/beautiful-traceback" }
 
+# additional packaging information: https://packaging.python.org/en/latest/specifications/core-metadata/#license
 [project.scripts]
 beautiful-traceback = "beautiful_traceback.cli:main"
+
 
 [build-system]
 requires = ["uv_build>=0.11.0,<0.12"]
@@ -48,6 +50,3 @@ source = ["beautiful_traceback"]
 
 [tool.coverage.report]
 fail_under = 50
-
-[tool.ruff]
-extend-exclude = ["playground.py", "playground/"]
