@@ -5,9 +5,11 @@ These tests verify that the logging formatters correctly format
 exceptions in log output.
 """
 
-import logging
 import io
+import logging
+
 import pytest
+
 from beautiful_traceback import LoggingFormatter, LoggingFormatterMixin
 
 
@@ -88,7 +90,7 @@ def test_logging_formatter_with_nested_exception():
             try:
                 raise ValueError("Inner error")
             except ValueError:
-                raise RuntimeError("Outer error")
+                raise RuntimeError("Outer error")  # noqa: B904
         except RuntimeError:
             logger.exception("Nested exception occurred")
 

@@ -1,13 +1,8 @@
-# -*- coding: utf-8 -*-
 # pylint: disable=redefined-outer-name
-from __future__ import division
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
-import tests.fixtures
 
 from beautiful_traceback import parsing
+
+import tests.fixtures
 
 
 def _validate_traceback(tb_result, tb_expect):
@@ -19,7 +14,7 @@ def _validate_traceback(tb_result, tb_expect):
     assert len(tb_result.stack_frames) == len(tb_expect.stack_frames)
 
     for result_entry, expect_entry in zip(
-        tb_result.stack_frames, tb_expect.stack_frames
+        tb_result.stack_frames, tb_expect.stack_frames, strict=False
     ):
         assert result_entry.module == expect_entry.module
         assert result_entry.call == expect_entry.call
@@ -42,6 +37,6 @@ def test_parse_basic_trace():
 def test_parse_nested_trace():
     traceback_results = parsing.parse_tracebacks(tests.fixtures.CHAINED_TRACEBACK_STR)
     for tb_result, tb_expect in zip(
-        traceback_results, tests.fixtures.CHAINED_TRACEBACK
+        traceback_results, tests.fixtures.CHAINED_TRACEBACK, strict=False
     ):
         _validate_traceback(tb_result, tb_expect)

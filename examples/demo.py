@@ -97,7 +97,7 @@ def demo_nested_exception():
             return settings
         except:  # noqa: E722
             # This will show both exceptions
-            raise RuntimeError("Configuration loading failed")
+            raise RuntimeError("Configuration loading failed") from None
 
     load_settings()
 

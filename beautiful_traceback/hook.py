@@ -8,8 +8,7 @@ import typing as typ
 
 import colorama
 
-from beautiful_traceback import config
-from beautiful_traceback import formatting
+from beautiful_traceback import config, formatting
 
 log = logging.getLogger(__name__)
 
@@ -40,7 +39,7 @@ def init_excepthook(
     show_aliases: bool = False,
 ) -> typ.Callable:
     def excepthook(
-        exc_type: typ.Type[BaseException],
+        exc_type: type[BaseException],
         exc_value: BaseException,
         traceback: types.TracebackType,
         thread: threading.Thread | None = None,

@@ -4,9 +4,8 @@ import threading
 
 import pytest
 
-from beautiful_traceback import configure, exc_to_json
-from beautiful_traceback import formatting
 import beautiful_traceback.config as bt_config
+from beautiful_traceback import configure, exc_to_json, formatting
 
 
 @pytest.fixture
@@ -83,7 +82,7 @@ def test_exception_chain_with_context(env_setup):
         try:
             raise KeyError("context_key")
         except KeyError:
-            raise ValueError("new error")
+            raise ValueError("new error")  # noqa: B904
     except ValueError:
         exc_info = sys.exc_info()
         assert exc_info[1] is not None

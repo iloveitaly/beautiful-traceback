@@ -6,7 +6,8 @@ in pytest output when tests fail.
 """
 
 import pytest
-from beautiful_traceback import pytest_plugin, formatting
+
+from beautiful_traceback import formatting, pytest_plugin
 
 
 def test_plugin_hooks_exist():
@@ -165,7 +166,7 @@ def test_nested_exceptions_in_formatting():
         try:
             raise ValueError("First error")
         except ValueError:
-            raise RuntimeError("Second error")
+            raise RuntimeError("Second error")  # noqa: B904
     except RuntimeError as e:
         assert e.__traceback__ is not None
         tb_str = formatting.exc_to_traceback_str(

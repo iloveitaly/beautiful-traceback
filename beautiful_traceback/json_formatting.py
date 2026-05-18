@@ -8,9 +8,9 @@ import threading
 import types
 import typing as typ
 
-from beautiful_traceback.common import ExceptionTraceback
 import beautiful_traceback.config as config
 import beautiful_traceback.formatting as fmt
+from beautiful_traceback.common import ExceptionTraceback
 
 
 def _row_to_json_frame(row: fmt.Row) -> dict[str, typ.Any]:

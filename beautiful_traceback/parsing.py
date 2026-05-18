@@ -27,7 +27,7 @@ File
 LOCATION_RE = re.compile(LOCATION_PATTERN, flags=re.VERBOSE)
 
 
-def _parse_entries(entry_lines: typ.List[str]) -> typ.Iterable[StackFrameEntry]:
+def _parse_entries(entry_lines: list[str]) -> typ.Iterable[StackFrameEntry]:
     i = 0
     while i < len(entry_lines):
         line = entry_lines[i]
@@ -87,7 +87,7 @@ def _iter_tracebacks(trace: str) -> typ.Iterable[ExceptionTraceback]:
                 break
 
         # accumulate entry lines
-        entry_lines: typ.List[str] = []
+        entry_lines: list[str] = []
         while i < len(lines) and lines[i].startswith("  "):
             entry_lines.append(lines[i])
             i += 1

@@ -29,7 +29,7 @@ class StackFrameEntry(typ.NamedTuple):
     src_ctx: str
 
 
-StackFrameEntryList = typ.List[StackFrameEntry]
+StackFrameEntryList = list[StackFrameEntry]
 
 
 class ExceptionTraceback(typ.NamedTuple):
@@ -54,7 +54,7 @@ class ExceptionTraceback(typ.NamedTuple):
     is_context: bool
 
 
-ExceptionTracebackList = typ.List[ExceptionTraceback]
+ExceptionTracebackList = list[ExceptionTraceback]
 
 # Standard headers used across different renderers
 ALIASES_HEAD = "Aliases for entries in sys.path:"

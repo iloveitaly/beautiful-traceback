@@ -36,7 +36,6 @@ from fastapi.responses import JSONResponse
 
 from beautiful_traceback import exc_to_json
 
-
 logging.basicConfig(
     level=logging.INFO,
     format="%(message)s",

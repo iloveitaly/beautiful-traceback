@@ -3,6 +3,7 @@ Test for infinite loop bug with httpx.ConnectError and circular exception chains
 """
 
 import pytest
+
 import beautiful_traceback
 
 

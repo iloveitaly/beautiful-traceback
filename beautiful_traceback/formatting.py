@@ -47,7 +47,7 @@ def _get_terminal_width() -> int:
         return columns
     except sp.CalledProcessError:
         pass
-    except IOError:
+    except OSError:
         pass
 
     return DEFAULT_COLUMNS
@@ -91,12 +91,12 @@ class PaddedRow(typ.NamedTuple):
 Alias = str
 Prefix = str
 
-AliasPrefix = typ.Tuple[Alias, Prefix]
-AliasPrefixes = typ.List[AliasPrefix]
+AliasPrefix = tuple[Alias, Prefix]
+AliasPrefixes = list[AliasPrefix]
 
 
 class Context(typ.NamedTuple):
-    rows: typ.List[Row]
+    rows: list[Row]
     aliases: AliasPrefixes
 
     max_row_width: int
@@ -124,7 +124,7 @@ def _iter_entry_paths(entries: StackFrameEntryList) -> typ.Iterable[str]:
 
 
 # used by unit tests to override paths
-TEST_PATHS: typ.List[str] = []
+TEST_PATHS: list[str] = []
 
 PWD = os.getcwd()
 
@@ -172,7 +172,7 @@ def _row_matches_exclude_patterns(
     return False
 
 
-def _py_paths() -> typ.List[str]:
+def _py_paths() -> list[str]:
     if TEST_PATHS:
         return TEST_PATHS
 
@@ -192,7 +192,7 @@ def _py_paths() -> typ.List[str]:
     return paths
 
 
-def _iter_used_py_paths(entry_paths: typ.List[str]) -> typ.Iterable[str]:
+def _iter_used_py_paths(entry_paths: list[str]) -> typ.Iterable[str]:
     _uniq_entry_paths = set(entry_paths)
 
     for py_path in _py_paths():
@@ -206,7 +206,7 @@ def _iter_used_py_paths(entry_paths: typ.List[str]) -> typ.Iterable[str]:
             yield py_path
 
 
-def _iter_alias_prefixes(entry_paths: typ.List[str]) -> typ.Iterable[AliasPrefix]:
+def _iter_alias_prefixes(entry_paths: list[str]) -> typ.Iterable[AliasPrefix]:
     alias_index = 0
 
     for py_path in _iter_used_py_paths(entry_paths):
@@ -235,9 +235,9 @@ def _iter_alias_prefixes(entry_paths: typ.List[str]) -> typ.Iterable[AliasPrefix
 
 
 def _iter_entry_rows(
-    aliases: AliasPrefixes, entry_paths: typ.List[str], entries: StackFrameEntryList
+    aliases: AliasPrefixes, entry_paths: list[str], entries: StackFrameEntryList
 ) -> typ.Iterable[Row]:
-    for abs_module, entry in zip(entry_paths, entries):
+    for abs_module, entry in zip(entry_paths, entries, strict=False):
         used_alias = ""
         module_full = abs_module
         module_short = abs_module
@@ -271,7 +271,7 @@ def _iter_entry_rows(
 
 def _init_entries_context(
     entries: StackFrameEntryList,
-    term_width: typ.Optional[int] = None,
+    term_width: int | None = None,
     exclude_patterns: typ.Sequence[str] = (),
 ) -> Context:
     if term_width is None:
@@ -377,7 +377,7 @@ def _aliases_to_lines(ctx: Context, color: bool = False) -> typ.Iterable[str]:
 
 
 def _rows_to_lines(
-    rows: typ.List[PaddedRow], color: bool = False, local_stack_only: bool = False
+    rows: list[PaddedRow], color: bool = False, local_stack_only: bool = False
 ) -> typ.Iterable[str]:
     # apply colors and additional separators/ spacing
     fmt_module = FMT_MODULE if color else "{0}"
@@ -459,7 +459,7 @@ def _format_traceback(
     if traceback.exc_name == "RecursionError" and len(lines) > 100:
         prelude_index = 0
 
-        line_counts: typ.Dict[str, int] = collections.defaultdict(int)
+        line_counts: dict[str, int] = collections.defaultdict(int)
         for i, line in enumerate(lines):
             line_counts[line] += 1
             if line_counts[line] == 3:
@@ -499,13 +499,13 @@ def format_traceback(
 
 
 def format_tracebacks(
-    tracebacks: typ.List[ExceptionTraceback],
+    tracebacks: list[ExceptionTraceback],
     color: bool = False,
     local_stack_only: bool = False,
     exclude_patterns: typ.Sequence[str] = (),
     show_aliases: bool = True,
 ) -> str:
-    traceback_strs: typ.List[str] = []
+    traceback_strs: list[str] = []
 
     for tb_tup in tracebacks:
         if tb_tup.is_caused:
@@ -543,13 +543,13 @@ def exc_to_traceback_str(
     # NOTE (mb 2020-08-13): wrt. cause vs context see
     #   https://www.python.org/dev/peps/pep-3134/#enhanced-reporting
     #   https://stackoverflow.com/questions/11235932/
-    tracebacks: typ.List[ExceptionTraceback] = []
+    tracebacks: list[ExceptionTraceback] = []
 
     cur_exc_value: BaseException = exc_value
     cur_traceback: types.TracebackType = traceback
 
     # Track seen exceptions to prevent infinite loops from circular references
-    seen_exceptions: typ.Set[int] = set()
+    seen_exceptions: set[int] = set()
 
     while cur_exc_value:
         # Check if we've seen this exception before (circular reference)

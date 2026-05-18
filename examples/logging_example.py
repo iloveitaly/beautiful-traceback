@@ -7,6 +7,7 @@ in your log output.
 """
 
 import logging
+
 import beautiful_traceback
 
 # Create a logger with beautiful formatting

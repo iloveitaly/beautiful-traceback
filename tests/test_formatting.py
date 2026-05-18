@@ -1,33 +1,27 @@
-# -*- coding: utf-8 -*-
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
 # pylint: disable=unused-argument
 
-from __future__ import division
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 import os
+import random
 import re
+import sched
+import subprocess as sp
 import sys
 import time
-import sched
-import random
-import subprocess as sp
 
 try:
     import __builtin__ as builtins  # type: ignore[import-not-found]
 except ImportError:
     import builtins
 
-import tests.fixtures
-
 import pytest
 
+from beautiful_traceback import formatting, parsing
 from beautiful_traceback.common import TRACEBACK_HEAD
-from beautiful_traceback import parsing
-from beautiful_traceback import formatting
+
+import tests.fixtures
 
 text_type = getattr(builtins, "unicode", str)
 
@@ -80,7 +74,7 @@ def test_formatting_basic():
             assert traceback.exc_msg in tb_entry_lines[-1]
             entry_lines = [line for line in tb_entry_lines if line.startswith("    ")]
             assert len(entry_lines) == len(traceback.stack_frames)
-            for line, entry in zip(entry_lines, traceback.stack_frames):
+            for line, entry in zip(entry_lines, traceback.stack_frames, strict=False):
                 assert entry.lineno in line
                 assert entry.src_ctx in line
                 assert entry.call in line
@@ -182,7 +176,7 @@ def _ping(depth=0):
     if depth > 1:
         try:
             sp.check_output(["command_that", "doesnt", "exist"])
-        except (OSError, IOError):
+        except OSError:
             try:
                 raise AttributeError()
             except AttributeError as attr_err:
@@ -193,7 +187,7 @@ def _ping(depth=0):
                 assert exc_value is attr_err
                 new_ex.__cause__ = exc_value
                 new_ex.__traceback__ = traceback
-                raise new_ex
+                raise new_ex from None
 
     _pong(depth + 1)
 

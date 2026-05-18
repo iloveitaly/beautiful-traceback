@@ -8,7 +8,7 @@ extracts those repr details and appends them to beautiful_traceback output.
 """
 
 import os
-from typing import Generator
+from collections.abc import Generator
 
 import pytest
 from pytest import Config
@@ -18,10 +18,11 @@ from pytest_plugin_utils.config import (
     set_pytest_option,
 )
 
-from . import config
-from . import formatting
-from .pytest_assertion import get_exception_message_override
-from .pytest_assertion import get_pytest_assertion_details
+from . import config, formatting
+from .pytest_assertion import (
+    get_exception_message_override,
+    get_pytest_assertion_details,
+)
 
 # __package__ is str | None (None when run as a top-level script), so we narrow it here
 assert __package__ is not None
