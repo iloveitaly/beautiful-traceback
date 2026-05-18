@@ -4,7 +4,17 @@ setup:
     uv venv && uv sync
     @echo "activate: source ./.venv/bin/activate"
 
-# Run tests
+docker_up:
+    docker compose up -d --wait
+
+docker_down:
+	docker compose down
+
+upgrade:
+    mise self-update
+    mise upgrade --local
+    uv sync -U
+
 test:
     uv run pytest -v
 
