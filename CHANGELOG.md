@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.0](https://github.com/iloveitaly/beautiful-traceback/compare/v0.9.0...v1.0.0) (2026-06-03)
+
+
+### Features
+
+* add project version and refine ruff configuration ([1443a11](https://github.com/iloveitaly/beautiful-traceback/commit/1443a111e7150f710dcdf9ea11a7e548a6e105c4))
+
+
+### Miscellaneous Chores
+
+* release 1.0.0 ([9b6e3d8](https://github.com/iloveitaly/beautiful-traceback/commit/9b6e3d8134b78446c34f4037adcef2cf515c38dd))
+
 ## [0.9.0](https://github.com/iloveitaly/beautiful-traceback/compare/v0.8.0...v0.9.0) (2026-03-19)
 
 
