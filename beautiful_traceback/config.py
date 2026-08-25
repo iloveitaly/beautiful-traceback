@@ -22,9 +22,14 @@ def configure(
     exclude_patterns: typ.Sequence[str] | None = None,
     show_aliases: bool | None = None,
 ) -> None:
-    """Set global defaults for traceback formatting helpers.
+    """Set process-wide defaults for traceback formatting.
 
-    Per-call arguments always override these defaults.
+    Used by `exc_to_json()`, `install()`, and the pytest plugin. Call this at
+    application startup so production JSON logs, test failures, and the
+    exception hook all drop the same library frames.
+
+    Does not install an exception hook. Per-call arguments always override
+    these defaults.
     """
     if local_stack_only is not None:
         _config["local_stack_only"] = local_stack_only

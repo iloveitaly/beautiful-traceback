@@ -10,8 +10,7 @@ Human readable stacktraces for Python.
 
 ![Comparison of standard Python traceback vs Beautiful Traceback](comparison.webp)
 
-> [!NOTE]
-> This is a fork of the [pretty-traceback](https://github.com/mbarkhau/pretty-traceback) repo with simplified development and improvements for better integration with FastAPI, [structlog](https://github.com/iloveitaly/structlog-config), IPython, pytest, and more. This project is used in [python-starter-template](https://github.com/iloveitaly/python-starter-template) to provide better debugging experience in production environments.
+Used in [python-starter-template](https://github.com/iloveitaly/python-starter-template) with [structlog-config](https://github.com/iloveitaly/structlog-config): pretty traces in development, structured exception JSON in production.
 
 ## Quick Start
 
@@ -37,22 +36,75 @@ uv add beautiful-traceback
 
 ## Usage
 
-Add the following to your `__main__.py` or the equivalent module which is your entry point.
+Two calls, with different jobs:
+
+- **`configure(...)`** sets process-wide defaults for frame filtering (`exclude_patterns`, `local_stack_only`, `show_aliases`). `exc_to_json()`, the pytest plugin, and `install()` all read these. Call it at app startup, **including production**.
+- **`install()`** replaces `sys.excepthook` and `threading.excepthook` so uncaught exceptions print a pretty traceback to stderr. Call it in development. Skip it when another library already owns the exception hook.
+
+`configure()` exists so you do not pass the same `exclude_patterns` on every log call. [structlog-config](https://github.com/iloveitaly/structlog-config) renders exceptions via `exc_to_json()` with no extra kwargs — one `configure()` is how production JSON logs drop sentry/pytest/playwright frames.
+
+`install()` is only for pretty *terminal* crash output. Pytest and IPython do not need it: the pytest plugin activates automatically, and IPython uses `%load_ext beautiful_traceback`.
+
+### Application (FastAPI, Celery, CLI)
+
+Call this once when the process starts. [python-starter-template](https://github.com/iloveitaly/python-starter-template) does this in `app/configuration/debugging.py`, which runs from `app/__init__.py`:
+
+```python
+import beautiful_traceback
+
+# Always: shared defaults for JSON logs, pytest, and the exception hook.
+beautiful_traceback.configure(
+    show_aliases=False,
+    exclude_patterns=[
+        r"^sentry_sdk/",
+        r"^_pytest/",
+        r"^pluggy/",
+        r"^playwright/",
+    ],
+)
+
+# Dev only: pretty traces when a process crashes to the terminal.
+# In production, skip this and let structlog-config log uncaught
+# exceptions as JSON (`configure_logger(install_exception_hook=True)`).
+if not is_production:
+    beautiful_traceback.install(
+        # rich/typer may have already hooked; take over anyway
+        only_hook_if_default_excepthook=False,
+    )
+```
+
+That pairs with:
+
+```python
+from structlog_config import configure_logger
+
+log = configure_logger(
+    json_logger=is_production,
+    install_exception_hook=is_production,
+)
+```
+
+In production, structlog owns the exception hook and renders via `exc_to_json()`, which inherits the `configure()` defaults. In development, `install()` owns the hook for a readable stderr traceback.
+
+### Scripts
+
+For a one-off script, `install()` at the entrypoint is enough:
 
 ```python
 try:
     import beautiful_traceback
     beautiful_traceback.install()
 except ImportError:
-    pass    # no need to fail because of missing dev dependency
+    pass  # optional dependency
 ```
 
-Please do not add this code e.g. to your `__init__.py` or any other module that your users may import. They may not want you to mess with how their tracebacks are printed.
+By default `install()` only replaces Python's built-in hook. Pass `only_hook_if_default_excepthook=False` to override an existing hook (rich, typer, etc).
 
-> [!NOTE]
-> If you must call `install()` in shared code, set `BEAUTIFUL_TRACEBACK_ENABLED=true` only in environments where you want it active. When the env var is absent or falsy, `install()` is a no-op.
+### Libraries
 
-Note, that the hook is only installed if the existing hook is the default. Any existing hooks that were installed before the call of `beautiful_traceback.install` will be left in place.
+If you are publishing a package, do **not** call `install()` from `__init__.py` or any other module that *your users* may import. They may not want you to change how their tracebacks are printed.
+
+If you must call `install()` from shared library code, users can set `BEAUTIFUL_TRACEBACK_ENABLED=false` to make it a no-op.
 
 ## LoggingFormatter
 
@@ -244,10 +296,7 @@ The matcher checks all of these representations for each frame:
 
 That means you can write broad patterns like `^fastapi/` for alias-relative matching, `/site-packages/fastapi/` for absolute path matching, or `^<site> .*fastapi/` if you want to require a specific alias.
 
-The same patterns also work with `install()` and `configure()`:
-
-
-If you want to drop a whole integration layer, match the module prefix instead:
+The same patterns work with `install()` and `configure()`. If you want to drop a whole integration layer, match the module prefix instead:
 
 ```python
 exclude_patterns = [
@@ -260,7 +309,7 @@ exclude_patterns = [
 
 ### Global defaults with `configure()`
 
-Use `configure()` to set shared defaults for traceback rendering helpers instead of passing them on every call:
+Without `configure()`, every `exc_to_json()` call would need the same `exclude_patterns`. Call it once at startup (see [Usage](#usage)) and those defaults apply to JSON logs, pytest, and `install()`.
 
 ```python
 from beautiful_traceback import configure, exc_to_json
@@ -268,7 +317,7 @@ from beautiful_traceback import configure, exc_to_json
 configure(
     local_stack_only=True,
     exclude_patterns=[r"site-packages/"],
-  show_aliases=False,
+    show_aliases=False,
 )
 
 # these options are now applied automatically
@@ -278,7 +327,7 @@ except Exception:
     log.error("unhandled exception", **exc_to_json(sys.exc_info()))
 ```
 
-Per-call arguments always override `configure()` defaults. `install()` also calls `configure()` with its explicit formatting options, so shared defaults stay aligned.
+Per-call arguments always override `configure()` defaults. Formatting options passed to `install()` are also written into the same global config.
 
 ## Threading Support
 
@@ -295,17 +344,21 @@ Check out the [examples/](examples/) directory for basic usage, exception chaini
 
 ## Configuration
 
-### Installation Options
-
-Beautiful Traceback supports several configuration options:
+See [Usage](#usage) for when to call `configure()` vs `install()`. Options below apply to both.
 
 ```python
+beautiful_traceback.configure(
+    local_stack_only=False,
+    show_aliases=False,
+    exclude_patterns=["click/core\\.py"],
+)
+
 beautiful_traceback.install(
     color=True,                            # Enable colored output
     only_tty=True,                         # Only activate for TTY output
     only_hook_if_default_excepthook=True,  # Only install if default hook
-    local_stack_only=None,                 # Defaults to BEAUTIFUL_TRACEBACK_LOCAL_STACK_ONLY env var
-    show_aliases=None,                     # Defaults to BEAUTIFUL_TRACEBACK_SHOW_ALIASES env var (default: false)
+    local_stack_only=None,                 # Defaults to configure() / BEAUTIFUL_TRACEBACK_LOCAL_STACK_ONLY
+    show_aliases=None,                     # Defaults to configure() / BEAUTIFUL_TRACEBACK_SHOW_ALIASES (default: false)
     exclude_patterns=["click/core\\.py"],  # Regex patterns to drop frames
 )
 ```
@@ -313,7 +366,7 @@ beautiful_traceback.install(
 ### Environment Variables
 
 - **`NO_COLOR`** - Disables colored output when set (respects [no-color.org](https://no-color.org) standard)
-- **`BEAUTIFUL_TRACEBACK_ENABLED`** - Set to `false`/`0`/`no` to disable. Useful when install() is called in shared code.
+- **`BEAUTIFUL_TRACEBACK_ENABLED`** - Set to `false`/`0`/`no` to make `install()` a no-op. Useful when a library calls `install()` and an application wants it off.
 - **`BEAUTIFUL_TRACEBACK_LOCAL_STACK_ONLY`** - Set to `true`/`1`/`yes` to filter out library/framework frames.
 - **`BEAUTIFUL_TRACEBACK_SHOW_ALIASES`** - Set to `false`/`0`/`no` to hide the sys.path aliases section.
 
@@ -386,9 +439,15 @@ EOF
 
 After sourcing your shell config, run `python-inject-beautiful-traceback` to enable beautiful tracebacks globally for that Python environment.
 
+## Related Projects
+
+- [python-starter-template](https://github.com/iloveitaly/python-starter-template) — full-stack app that uses this package as shown in [Usage](#usage)
+- [structlog-config](https://github.com/iloveitaly/structlog-config) — opinionated structlog setup; uses beautiful-traceback automatically for console and JSON exceptions
+- [pretty-traceback](https://github.com/mbarkhau/pretty-traceback) — original inspiration for the tabular traceback layout
+
 ## Alternatives
 
-Beautiful Traceback is heavily inspired by the backtrace module by [nir0s](https://github.com/nir0s/backtrace) but there are many others (sorted by github stars):
+Other traceback formatters (sorted by github stars):
 
 - https://github.com/qix-/better-exceptions
 - https://github.com/cknd/stackprinter
@@ -397,7 +456,6 @@ Beautiful Traceback is heavily inspired by the backtrace module by [nir0s](https
 - https://github.com/aroberge/friendly-traceback
 - https://github.com/HallerPatrick/frosch
 - https://github.com/nir0s/backtrace
-- https://github.com/mbarkhau/pretty-traceback
 - https://github.com/staticshock/colored-traceback.py
 - https://github.com/chillaranand/ptb
 - https://github.com/laurb9/rich-traceback
