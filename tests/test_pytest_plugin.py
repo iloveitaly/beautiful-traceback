@@ -92,7 +92,7 @@ def test_formatting_with_color():
 def test_exception_message_override_for_assertions():
     """Test that assertion errors include verbose messages."""
     try:
-        assert 1 == 2
+        assert 1 == 2  # noqa: PLR0133
     except AssertionError:
         excinfo = pytest.ExceptionInfo.from_current()
         message = pytest_plugin.get_exception_message_override(excinfo)
@@ -111,7 +111,7 @@ def test_exception_message_override_for_assertions():
 def test_pytest_assertion_details_capture():
     """Test that pytest assertion details are extracted."""
     try:
-        assert 1 == 2
+        assert 1 == 2  # noqa: PLR0133
     except AssertionError:
         excinfo = pytest.ExceptionInfo.from_current()
         details = pytest_plugin.get_pytest_assertion_details(excinfo)

@@ -2,6 +2,8 @@
 Test for infinite loop bug with httpx.ConnectError and circular exception chains.
 """
 
+import contextlib
+
 import pytest
 
 import beautiful_traceback
@@ -17,8 +19,6 @@ def test_httpx_connect_error_reproduction():
     # Mock httpx.ConnectError
     class MockConnectError(Exception):
         """Mock of httpx.ConnectError"""
-
-        pass
 
     # Install beautiful traceback
     beautiful_traceback.install()
@@ -130,17 +130,13 @@ def test_deeply_nested_exception_chain():
     """
     # Create a chain of 100 exceptions
     exc = ValueError("Base error")
-    try:
+    with contextlib.suppress(ValueError):
         raise exc
-    except:  # noqa: E722
-        pass
 
     for i in range(100):
         new_exc = RuntimeError(f"Error {i}")
-        try:
+        with contextlib.suppress(RuntimeError):
             raise new_exc from exc
-        except:  # noqa: E722
-            pass
         exc = new_exc
 
     # This should handle deep chains without issues
