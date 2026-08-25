@@ -214,9 +214,9 @@ def _iter_alias_prefixes(entry_paths: list[str]) -> typ.Iterable[AliasPrefix]:
             alias = "<site>"
         elif py_path.endswith("dist-packages"):
             alias = "<dist>"
-        elif re.search(r"lib/python\d.\d+$", py_path):
-            alias = "<py>"
-        elif re.search(r"lib/Python\d.\d+\\lib$", py_path):
+        elif re.search(r"lib/python\d.\d+$", py_path) or re.search(
+            r"lib/Python\d.\d+\\lib$", py_path
+        ):
             alias = "<py>"
         elif py_path.startswith(PWD):
             alias = "<pwd>"
@@ -417,7 +417,7 @@ def _rows_to_lines(
 
         line = "".join(parts)
 
-        if local_stack_only and not alias == "<pwd>":
+        if local_stack_only and alias != "<pwd>":
             continue
 
         # bold any entries which are the current working directory
