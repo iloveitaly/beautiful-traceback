@@ -36,7 +36,7 @@ def show_standard_traceback():
 
     try:
         level_1()
-    except Exception:
+    except ZeroDivisionError:
         import traceback
 
         traceback.print_exc()

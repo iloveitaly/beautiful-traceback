@@ -164,7 +164,7 @@ def main():
         except KeyboardInterrupt:
             print("\n\nDemo interrupted by user.")
             sys.exit(0)
-        except Exception:
+        except Exception:  # noqa: BLE001
             # The beautiful exception will be shown
             if i < len(demos):
                 input("\n\nPress Enter to continue to the next example...")

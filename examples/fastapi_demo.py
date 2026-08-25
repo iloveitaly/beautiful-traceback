@@ -111,7 +111,7 @@ async def local_only_error():
     try:
         data = {"key": "value"}
         return data["missing_key"]
-    except Exception:
+    except KeyError:
         exc_info = sys.exc_info()
         json_traceback_full = exc_to_json(exc_info, local_stack_only=False)
         json_traceback_local = exc_to_json(exc_info, local_stack_only=True)

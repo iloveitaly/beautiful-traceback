@@ -132,6 +132,7 @@ beautiful_traceback.install()
 
 # Or use with logging
 import logging
+
 handler = logging.StreamHandler()
 handler.setFormatter(beautiful_traceback.LoggingFormatter())
 logger.addHandler(handler)
