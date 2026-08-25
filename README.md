@@ -42,9 +42,10 @@ Add the following to your `__main__.py` or the equivalent module which is your e
 ```python
 try:
     import beautiful_traceback
+
     beautiful_traceback.install()
 except ImportError:
-    pass    # no need to fail because of missing dev dependency
+    pass  # no need to fail because of missing dev dependency
 ```
 
 Please do not add this code e.g. to your `__init__.py` or any other module that your users may import. They may not want you to mess with how their tracebacks are printed.
@@ -63,11 +64,12 @@ import os
 from flask.logging import default_handler
 
 try:
-    if os.getenv('FLASK_DEBUG') == "1":
+    if os.getenv("FLASK_DEBUG") == "1":
         import beautiful_traceback
+
         default_handler.setFormatter(beautiful_traceback.LoggingFormatter())
 except ImportError:
-    pass    # no need to fail because of missing dev dependency
+    pass  # no need to fail because of missing dev dependency
 ```
 
 ## IPython and Jupyter Integration
@@ -212,23 +214,21 @@ from beautiful_traceback import exc_to_json
 
 
 try:
-  ...
+    ...
 except Exception:
-  payload = exc_to_json(
-    sys.exc_info(),
-    exclude_patterns=[
-      # Match the short module value from JSON output.
-      r"^uvicorn/middleware/proxy_headers\.py$",
-      r"^fastapi/applications\.py$",
-
-      # Match the absolute file path on disk.
-      r"/site-packages/fastapi/routing\.py$",
-      r"/site-packages/sentry_sdk/integrations/starlette\.py$",
-
-      # Or match a specific deployment path if you want to be exact.
-      r"^/app/\.venv/lib/python3\.13/site-packages/uvicorn/middleware/proxy_headers\.py$",
-    ],
-  )
+    payload = exc_to_json(
+        sys.exc_info(),
+        exclude_patterns=[
+            # Match the short module value from JSON output.
+            r"^uvicorn/middleware/proxy_headers\.py$",
+            r"^fastapi/applications\.py$",
+            # Match the absolute file path on disk.
+            r"/site-packages/fastapi/routing\.py$",
+            r"/site-packages/sentry_sdk/integrations/starlette\.py$",
+            # Or match a specific deployment path if you want to be exact.
+            r"^/app/\.venv/lib/python3\.13/site-packages/uvicorn/middleware/proxy_headers\.py$",
+        ],
+    )
 ```
 
 The matcher checks all of these representations for each frame:
@@ -251,10 +251,10 @@ If you want to drop a whole integration layer, match the module prefix instead:
 
 ```python
 exclude_patterns = [
-  r"^uvicorn/",
-  r"^fastapi/",
-  r"^starlette/",
-  r"^sentry_sdk/integrations/",
+    r"^uvicorn/",
+    r"^fastapi/",
+    r"^starlette/",
+    r"^sentry_sdk/integrations/",
 ]
 ```
 
@@ -268,7 +268,7 @@ from beautiful_traceback import configure, exc_to_json
 configure(
     local_stack_only=True,
     exclude_patterns=[r"site-packages/"],
-  show_aliases=False,
+    show_aliases=False,
 )
 
 # these options are now applied automatically
@@ -301,11 +301,11 @@ Beautiful Traceback supports several configuration options:
 
 ```python
 beautiful_traceback.install(
-    color=True,                            # Enable colored output
-    only_tty=True,                         # Only activate for TTY output
+    color=True,  # Enable colored output
+    only_tty=True,  # Only activate for TTY output
     only_hook_if_default_excepthook=True,  # Only install if default hook
-    local_stack_only=None,                 # Defaults to BEAUTIFUL_TRACEBACK_LOCAL_STACK_ONLY env var
-    show_aliases=None,                     # Defaults to BEAUTIFUL_TRACEBACK_SHOW_ALIASES env var (default: false)
+    local_stack_only=None,  # Defaults to BEAUTIFUL_TRACEBACK_LOCAL_STACK_ONLY env var
+    show_aliases=None,  # Defaults to BEAUTIFUL_TRACEBACK_SHOW_ALIASES env var (default: false)
     exclude_patterns=["click/core\\.py"],  # Regex patterns to drop frames
 )
 ```
@@ -327,9 +327,10 @@ For more advanced logging integration, you can use `LoggingFormatterMixin` as a 
 import logging
 import beautiful_traceback
 
+
 class MyFormatter(beautiful_traceback.LoggingFormatterMixin, logging.Formatter):
     def __init__(self):
-        super().__init__(fmt='%(levelname)s: %(message)s')
+        super().__init__(fmt="%(levelname)s: %(message)s")
 ```
 
 This gives you full control over the log format while adding beautiful traceback support.
