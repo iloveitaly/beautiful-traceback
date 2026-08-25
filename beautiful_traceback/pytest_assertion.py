@@ -16,7 +16,7 @@ def get_exception_message_override(excinfo: pytest.ExceptionInfo) -> str | None:
     """
     try:
         repr_info = excinfo.getrepr(style="long")
-    except Exception:
+    except Exception:  # noqa: BLE001
         return None
 
     reprcrash = getattr(repr_info, "reprcrash", None)
@@ -57,7 +57,7 @@ def get_pytest_assertion_details(excinfo: pytest.ExceptionInfo) -> str | None:
         # pytest stores assertion diffs on its own repr object, not the exception.
         # Reference: https://github.com/pytest-dev/pytest/blob/main/src/_pytest/_code/code.py
         repr_info = excinfo.getrepr(style="long")
-    except Exception:
+    except Exception:  # noqa: BLE001
         return None
 
     reprtraceback = getattr(repr_info, "reprtraceback", None)

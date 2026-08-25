@@ -8,8 +8,8 @@ import threading
 import types
 import typing as typ
 
-import beautiful_traceback.config as config
 import beautiful_traceback.formatting as fmt
+from beautiful_traceback import config
 from beautiful_traceback.common import ExceptionTraceback
 
 
