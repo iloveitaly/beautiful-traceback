@@ -442,7 +442,6 @@ After sourcing your shell config, run `python-inject-beautiful-traceback` to ena
 
 - [python-starter-template](https://github.com/iloveitaly/python-starter-template) — full-stack app that uses this package as shown in [Usage](#usage)
 - [structlog-config](https://github.com/iloveitaly/structlog-config) — opinionated structlog setup; uses beautiful-traceback automatically for console and JSON exceptions
-- [pretty-traceback](https://github.com/mbarkhau/pretty-traceback) — original inspiration for the tabular traceback layout
 
 ## Alternatives
 
