@@ -39,7 +39,7 @@ Two calls, with different jobs:
 - **`configure(...)`** sets process-wide defaults for frame filtering (`exclude_patterns`, `local_stack_only`, `show_aliases`). `exc_to_json()`, the pytest plugin, and `install()` all read these. Call it at app startup, **including production**.
 - **`install()`** replaces `sys.excepthook` and `threading.excepthook` so uncaught exceptions print a pretty traceback to stderr. Call it in development. Skip it when another library already owns the exception hook.
 
-`configure()` exists so you do not pass the same `exclude_patterns` on every log call. [structlog-config](https://github.com/iloveitaly/structlog-config) renders exceptions via `exc_to_json()` with no extra kwargs — one `configure()` is how production JSON logs drop sentry/pytest/playwright frames.
+`configure()` exists so you do not pass the same `exclude_patterns` on every log call. For example, [structlog-config](https://github.com/iloveitaly/structlog-config) renders exceptions via `exc_to_json()` with no extra kwargs — one `configure()` is how those logs drop sentry/pytest/playwright frames.
 
 `install()` is only for pretty *terminal* crash output. Pytest and IPython do not need it: the pytest plugin activates automatically, and IPython uses `%load_ext beautiful_traceback`.
 
