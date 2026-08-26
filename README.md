@@ -10,8 +10,6 @@ Human readable stacktraces for Python.
 
 ![Comparison of standard Python traceback vs Beautiful Traceback](comparison.webp)
 
-Used in [python-starter-template](https://github.com/iloveitaly/python-starter-template) with [structlog-config](https://github.com/iloveitaly/structlog-config): pretty traces in development, structured exception JSON in production.
-
 ## Quick Start
 
 The fastest way to see it in action:
