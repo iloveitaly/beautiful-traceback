@@ -72,7 +72,15 @@ def install(
     exclude_patterns: typ.Sequence[str] | None = None,
     show_aliases: bool | None = None,
 ) -> None:
-    """Hook the current excepthook to the beautiful_traceback.
+    """Hook sys.excepthook and threading.excepthook to print beautiful tracebacks.
+
+    Use this at a process entrypoint (script, CLI, app startup) so uncaught
+    exceptions dump a formatted traceback to stderr. Skip it in production if
+    another library (e.g. structlog-config) already installs an exception hook
+    for structured logging.
+
+    For process-wide frame filters used by `exc_to_json()` and pytest, call
+    `configure()` instead — or in addition. `configure()` does not install a hook.
 
     If you set `only_tty=False`, beautiful_traceback will always
     be active even when stdout is piped or redirected.
