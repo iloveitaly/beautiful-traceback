@@ -455,6 +455,7 @@ Other traceback formatters (sorted by github stars):
 - https://github.com/aroberge/friendly-traceback
 - https://github.com/HallerPatrick/frosch
 - https://github.com/nir0s/backtrace
+- https://github.com/mbarkhau/pretty-traceback
 - https://github.com/staticshock/colored-traceback.py
 - https://github.com/chillaranand/ptb
 - https://github.com/laurb9/rich-traceback
