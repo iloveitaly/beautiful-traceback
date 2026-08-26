@@ -62,8 +62,9 @@ beautiful_traceback.configure(
 )
 
 # Dev only: pretty traces when a process crashes to the terminal.
-# In production, skip this and let structlog-config log uncaught
-# exceptions as JSON (`configure_logger(install_exception_hook=True)`).
+# In production, skip this and let your logging library (such as
+# structlog-config) log uncaught exceptions as JSON
+# (`configure_logger(install_exception_hook=True)`).
 if not is_production:
     beautiful_traceback.install(
         # rich/typer may have already hooked; take over anyway
