@@ -15,7 +15,9 @@ def _args_section_param_names(func):
     match = re.search(r"^Args:\n((?:[ \t].*\n?)*)", doc, re.MULTILINE)
     assert match, f"{func.__name__} docstring is missing a Google-style Args section"
 
-    return set(re.findall(r"^    ([a-zA-Z_][a-zA-Z0-9_]*):", match.group(1), re.MULTILINE))
+    return set(
+        re.findall(r"^    ([a-zA-Z_][a-zA-Z0-9_]*):", match.group(1), re.MULTILINE)
+    )
 
 
 @pytest.fixture(autouse=True)
@@ -146,10 +148,14 @@ def test_get_config_is_exposed():
 def test_install_docstring_documents_all_parameters():
     params = set(inspect.signature(install).parameters)
     documented = _args_section_param_names(install)
-    assert params == documented, f"undocumented: {params - documented}; extra: {documented - params}"
+    assert params == documented, (
+        f"undocumented: {params - documented}; extra: {documented - params}"
+    )
 
 
 def test_configure_docstring_documents_all_parameters():
     params = set(inspect.signature(configure).parameters)
     documented = _args_section_param_names(configure)
-    assert params == documented, f"undocumented: {params - documented}; extra: {documented - params}"
+    assert params == documented, (
+        f"undocumented: {params - documented}; extra: {documented - params}"
+    )
