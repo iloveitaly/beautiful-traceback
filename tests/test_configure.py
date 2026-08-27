@@ -1,7 +1,21 @@
+import inspect
+import re
+
 import pytest
 
 import beautiful_traceback.config as bt_config
 from beautiful_traceback import configure
+from beautiful_traceback.hook import install
+
+
+def _args_section_param_names(func):
+    doc = inspect.getdoc(func)
+    assert doc is not None, f"{func.__name__} is missing a docstring"
+
+    match = re.search(r"^Args:\n((?:[ \t].*\n?)*)", doc, re.MULTILINE)
+    assert match, f"{func.__name__} docstring is missing a Google-style Args section"
+
+    return set(re.findall(r"^    ([a-zA-Z_][a-zA-Z0-9_]*):", match.group(1), re.MULTILINE))
 
 
 @pytest.fixture(autouse=True)
@@ -127,3 +141,15 @@ def test_get_config_is_exposed():
 
     assert hasattr(beautiful_traceback, "get_config")
     assert beautiful_traceback.get_config is bt_config.get_config
+
+
+def test_install_docstring_documents_all_parameters():
+    params = set(inspect.signature(install).parameters)
+    documented = _args_section_param_names(install)
+    assert params == documented, f"undocumented: {params - documented}; extra: {documented - params}"
+
+
+def test_configure_docstring_documents_all_parameters():
+    params = set(inspect.signature(configure).parameters)
+    documented = _args_section_param_names(configure)
+    assert params == documented, f"undocumented: {params - documented}; extra: {documented - params}"

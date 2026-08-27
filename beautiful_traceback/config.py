@@ -29,7 +29,16 @@ def configure(
     exception hook all drop the same library frames.
 
     Does not install an exception hook. Per-call arguments always override
-    these defaults.
+    these defaults. `None` arguments leave the current default unchanged.
+
+    Args:
+        local_stack_only: Only include frames from `<pwd>`, filtering out
+            library frames. `None` leaves the current default unchanged.
+        exclude_patterns: Regex patterns matched against frame paths, short
+            module names, and rendered traceback lines to drop frames. `None`
+            leaves the current default unchanged.
+        show_aliases: Show the sys.path aliases section in formatted
+            tracebacks. `None` leaves the current default unchanged.
     """
     if local_stack_only is not None:
         _config["local_stack_only"] = local_stack_only
