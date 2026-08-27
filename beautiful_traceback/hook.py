@@ -93,7 +93,8 @@ def install(
         color: Enable ANSI-colored output. Forced off when stderr is not a TTY
             or when `NO_COLOR` is set (https://no-color.org/).
         only_tty: Only install the hook when stderr is a TTY. Pass `False` to
-            activate even when output is piped or redirected.
+            activate even when output is piped or redirected. Helpful to set
+            to `False` when running in a Docker container.
         only_hook_if_default_excepthook: Only replace `sys.excepthook` when it
             is still Python's default. Pass `False` to override an existing
             hook (rich, typer, etc).
