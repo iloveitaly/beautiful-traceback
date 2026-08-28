@@ -117,6 +117,20 @@ def _format_traceback(excinfo: pytest.ExceptionInfo, config_obj: Config) -> str:
     return formatted_traceback
 
 
+def _should_format_traceback(config_obj: Config, call, report) -> bool:
+    """Return whether this report has an exception traceback to restyle.
+
+    Skip the strict-xfail unexpected-pass shape: ``report.failed`` is True,
+    ``call.excinfo`` is None, and ``report.longrepr`` is the string
+    ``"[XPASS(strict)] <reason>"``. There is no traceback to format.
+    """
+    return (
+        _opt_bool(config_obj, "enable_beautiful_traceback")
+        and report.failed
+        and call.excinfo is not None
+    )
+
+
 def pytest_addoption(parser) -> None:
     register_pytest_options(_namespace, parser)
 
@@ -131,7 +145,7 @@ def pytest_runtest_makereport(item, call) -> Generator[None, None, None]:
     outcome = yield  # type: ignore[misc]
     report = outcome.get_result()  # type: ignore[attr-defined]
 
-    if _opt_bool(item.config, "enable_beautiful_traceback") and report.failed:
+    if _should_format_traceback(item.config, call, report):
         report.longrepr = _format_traceback(call.excinfo, item.config)
 
 
@@ -141,5 +155,5 @@ def pytest_exception_interact(node, call, report) -> None:
     This hook runs during collection (e.g., import errors, fixture errors)
     and ensures those errors also use beautiful_traceback formatting.
     """
-    if _opt_bool(node.config, "enable_beautiful_traceback") and report.failed:
+    if _should_format_traceback(node.config, call, report):
         report.longrepr = _format_traceback(call.excinfo, node.config)

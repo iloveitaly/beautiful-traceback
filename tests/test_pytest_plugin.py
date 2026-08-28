@@ -9,6 +9,8 @@ import pytest
 
 from beautiful_traceback import formatting, pytest_plugin
 
+pytest_plugins = ["pytester"]
+
 
 def test_plugin_hooks_exist():
     """Verify the plugin hooks are defined."""
@@ -219,6 +221,76 @@ def test_plugin_config_options_registered(pytestconfig):
         )
         is True
     )
+
+
+def test_xfail_strict_unexpected_pass_does_not_internalerror(pytester: pytest.Pytester):
+    """Strict XPASS is FAILED with no exception; do not crash while formatting."""
+    pytester.makepyfile(
+        """
+        import pytest
+
+        @pytest.mark.xfail(reason="Blocked by Issue #198", strict=True)
+        def test_unexpected_pass():
+            assert True
+        """
+    )
+
+    result = pytester.runpytest("-v")
+    output = result.stdout.str() + result.stderr.str()
+
+    assert "INTERNALERROR" not in output
+    assert result.ret == pytest.ExitCode.TESTS_FAILED
+    result.assert_outcomes(failed=1)
+    result.stdout.fnmatch_lines(["*[XPASS(strict)]*Blocked by Issue #198*"])
+
+
+def test_xfail_strict_ini_unexpected_pass_does_not_internalerror(
+    pytester: pytest.Pytester,
+):
+    """Global xfail_strict=true also marks unexpected passes as FAILED with no traceback."""
+    pytester.makeini(
+        """
+        [pytest]
+        xfail_strict = true
+        """
+    )
+    pytester.makepyfile(
+        """
+        import pytest
+
+        @pytest.mark.xfail(reason="Blocked by Issue #198")
+        def test_unexpected_pass():
+            assert True
+        """
+    )
+
+    result = pytester.runpytest("-v")
+    output = result.stdout.str() + result.stderr.str()
+
+    assert "INTERNALERROR" not in output
+    assert result.ret == pytest.ExitCode.TESTS_FAILED
+    result.assert_outcomes(failed=1)
+    result.stdout.fnmatch_lines(["*[XPASS(strict)]*Blocked by Issue #198*"])
+
+
+def test_xfail_strict_expected_failure_is_xfail(pytester: pytest.Pytester):
+    """Expected failures still report as XFAIL and do not fail the suite."""
+    pytester.makepyfile(
+        """
+        import pytest
+
+        @pytest.mark.xfail(reason="Blocked by Issue #198", strict=True)
+        def test_expected_failure():
+            assert False
+        """
+    )
+
+    result = pytester.runpytest("-v")
+    output = result.stdout.str() + result.stderr.str()
+
+    assert "INTERNALERROR" not in output
+    assert result.ret == pytest.ExitCode.OK
+    result.assert_outcomes(xfailed=1)
 
 
 if __name__ == "__main__":
