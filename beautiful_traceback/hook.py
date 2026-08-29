@@ -88,6 +88,26 @@ def install(
     Color output respects the NO_COLOR environment variable
     (https://no-color.org/). If NO_COLOR is set (regardless of
     its value), color output will be disabled.
+
+    Args:
+        color: Enable ANSI-colored output. Forced off when stderr is not a TTY
+            or when `NO_COLOR` is set (https://no-color.org/).
+        only_tty: Only install the hook when stderr is a TTY. Pass `False` to
+            activate even when output is piped or redirected. Helpful to set
+            to `False` when running in a Docker container.
+        only_hook_if_default_excepthook: Only replace `sys.excepthook` when it
+            is still Python's default. Pass `False` to override an existing
+            hook (rich, typer, etc).
+        local_stack_only: Only include frames from `<pwd>`, filtering out
+            library frames. `None` uses `configure()` /
+            `BEAUTIFUL_TRACEBACK_LOCAL_STACK_ONLY`. Written into the global
+            config when not `None`.
+        exclude_patterns: Regex patterns matched against frame paths to drop
+            frames. `None` uses `configure()` defaults. Written into the
+            global config when not `None`.
+        show_aliases: Show the sys.path aliases section. `None` uses
+            `configure()` / `BEAUTIFUL_TRACEBACK_SHOW_ALIASES` (default:
+            false). Written into the global config when not `None`.
     """
     if not config.env_bool("ENABLED", True):
         return
