@@ -39,8 +39,11 @@ jobs:
         python-version: ["3.14", "3.13", "3.12"]
     runs-on: ${{ matrix.os }}
     env:
-      # uv ignores `mise use` and picks a requires-python-compatible interpreter
-      # (currently always 3.14 from mise.toml) unless UV_PYTHON is set.
+      # uv does not consult mise. Discovery is: existing .venv / VIRTUAL_ENV,
+      # then an interpreter matching requires-python. mise-action +
+      # python.uv_venv_auto already creates a 3.14 .venv from mise.toml before
+      # `mise use` runs, so PATH python from mise is never the version request.
+      # https://docs.astral.sh/uv/concepts/python-versions/
       UV_PYTHON: ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v7
