@@ -5,6 +5,13 @@ description = "Beautiful, readable Python tracebacks with colors and formatting"
 keywords = ["traceback", "error", "debugging", "formatting"]
 readme = "README.md"
 requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
 dependencies = [
     "colorama>=0.4.6",
     "pytest-plugin-utils>=0.1.0",
