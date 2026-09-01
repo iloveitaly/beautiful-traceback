@@ -67,10 +67,10 @@ Demonstrates how beautiful-traceback catches and formats exceptions in backgroun
 python examples/threading_example.py
 ```
 
-Shows how exceptions in background threads are automatically caught and beautifully formatted, just like main-thread exceptions. Also demonstrates how to use `exc_to_json()` with thread metadata for structured production logging.
+Shows how exceptions in background threads are automatically caught and beautifully formatted, just like main-thread exceptions. Also demonstrates how to use `exc_to_json` with thread metadata for structured production logging.
 
 ### `json_demo.py` 📊 JSON Formatting
-Demonstrates `exc_to_json()` for converting exceptions to structured JSON:
+Demonstrates `exc_to_json` for converting exceptions to structured JSON:
 - Simple exceptions
 - Exception chains
 - Using `local_stack_only` flag
@@ -82,7 +82,7 @@ uv run examples/json_demo.py
 Perfect for production logging with structured loggers like structlog.
 
 ### `fastapi_demo.py` 🚀 FastAPI Integration
-Shows how to use `exc_to_json()` in a FastAPI application for JSON logging.
+Shows how to use `exc_to_json` in a FastAPI application for JSON logging.
 
 **Prerequisites:**
 ```bash
@@ -105,7 +105,7 @@ uvicorn examples.fastapi_demo:app --reload
 - `GET /users/{user_id}` - Returns user or raises error if not found
 - `GET /local-only-error` - Compare full vs local-only tracebacks
 
-The demo includes a global exception handler that catches all exceptions, converts them to JSON using `exc_to_json()`, and returns structured error responses.
+The demo includes a global exception handler that catches all exceptions, converts them to JSON using `exc_to_json`, and returns structured error responses.
 
 ## Features Demonstrated
 

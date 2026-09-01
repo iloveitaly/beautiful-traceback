@@ -36,12 +36,12 @@ uv add beautiful-traceback
 
 Two calls, with different jobs:
 
-- **`configure(...)`** sets process-wide defaults for frame filtering (`exclude_patterns`, `local_stack_only`, `show_aliases`). `exc_to_json()`, the pytest plugin, and `install()` all read these. Call it at app startup, **including production**.
-- **`install()`** replaces `sys.excepthook` and `threading.excepthook` so uncaught exceptions print a pretty traceback to stderr. Call it in development. Skip it when another library already owns the exception hook.
+- **`configure`** sets process-wide defaults for frame filtering (`exclude_patterns`, `local_stack_only`, `show_aliases`). `exc_to_json`, the pytest plugin, and `install` all read these. Call it at app startup, **including production**.
+- **`install`** replaces `sys.excepthook` and `threading.excepthook` so uncaught exceptions print a pretty traceback to stderr. Call it in development. Skip it when another library already owns the exception hook.
 
-`configure()` exists so you do not pass the same `exclude_patterns` on every log call. For example, [structlog-config](https://github.com/iloveitaly/structlog-config) renders exceptions via `exc_to_json()` with no extra kwargs — one `configure()` is how those logs drop sentry/pytest/playwright frames.
+`configure` exists so you do not pass the same `exclude_patterns` on every log call. For example, [structlog-config](https://github.com/iloveitaly/structlog-config) renders exceptions via `exc_to_json` with no extra kwargs — one `configure` is how those logs drop sentry/pytest/playwright frames.
 
-`install()` is only for pretty *terminal* crash output. Pytest and IPython do not need it: the pytest plugin activates automatically, and IPython uses `%load_ext beautiful_traceback`.
+`install` is only for pretty *terminal* crash output. Pytest and IPython do not need it: the pytest plugin activates automatically, and IPython uses `%load_ext beautiful_traceback`.
 
 ### Application (FastAPI, Celery, CLI)
 
@@ -83,11 +83,11 @@ log = configure_logger(
 )
 ```
 
-In production, structlog owns the exception hook and renders via `exc_to_json()`, which inherits the `configure()` defaults. In development, `install()` owns the hook for a readable stderr traceback.
+In production, structlog owns the exception hook and renders via `exc_to_json`, which inherits the `configure` defaults. In development, `install` owns the hook for a readable stderr traceback.
 
 ### Scripts
 
-For a one-off script, `install()` at the entrypoint is enough:
+For a one-off script, `install` at the entrypoint is enough:
 
 ```python
 try:
@@ -98,13 +98,13 @@ except ImportError:
     pass  # no need to fail because of missing dev dependency
 ```
 
-By default `install()` only replaces Python's built-in hook. Pass `only_hook_if_default_excepthook=False` to override an existing hook (rich, typer, etc).
+By default `install` only replaces Python's built-in hook. Pass `only_hook_if_default_excepthook=False` to override an existing hook (rich, typer, etc).
 
 ### Libraries
 
-If you are publishing a package, do **not** call `install()` from `__init__.py` or any other module that *your users* may import. They may not want you to change how their tracebacks are printed.
+If you are publishing a package, do **not** call `install` from `__init__.py` or any other module that *your users* may import. They may not want you to change how their tracebacks are printed.
 
-If you must call `install()` from shared library code, users can set `BEAUTIFUL_TRACEBACK_ENABLED=false` to make it a no-op.
+If you must call `install` from shared library code, users can set `BEAUTIFUL_TRACEBACK_ENABLED=false` to make it a no-op.
 
 ## LoggingFormatter
 
@@ -191,7 +191,7 @@ This allows you to write simpler patterns like `^_pytest/` instead of needing to
 
 ## JSON / Structured Logging
 
-`exc_to_json()` converts an exception to a JSON-serializable dict, suitable for production log pipelines (structlog, python-json-logger, etc.).
+`exc_to_json` converts an exception to a JSON-serializable dict, suitable for production log pipelines (structlog, python-json-logger, etc.).
 
 ```python
 import sys
@@ -235,7 +235,7 @@ Output shape:
 }
 ```
 
-`notes` is only present when `exc.add_note()` was called (Python 3.11+). `syntax_error` is only present for `SyntaxError` exceptions. `chain` is only present when the exception has `__cause__` or `__context__`.
+`notes` is only present when `exc.add_note` was called (Python 3.11+). `syntax_error` is only present for `SyntaxError` exceptions. `chain` is only present when the exception has `__cause__` or `__context__`.
 
 ### Exclude frames by module or file path
 
@@ -295,7 +295,7 @@ The matcher checks all of these representations for each frame:
 
 That means you can write broad patterns like `^fastapi/` for alias-relative matching, `/site-packages/fastapi/` for absolute path matching, or `^<site> .*fastapi/` if you want to require a specific alias.
 
-The same patterns work with `install()` and `configure()`. If you want to drop a whole integration layer, match the module prefix instead:
+The same patterns work with `install` and `configure`. If you want to drop a whole integration layer, match the module prefix instead:
 
 ```python
 exclude_patterns = [
@@ -306,9 +306,9 @@ exclude_patterns = [
 ]
 ```
 
-### Global defaults with `configure()`
+### Global defaults with `configure`
 
-Without `configure()`, every `exc_to_json()` call would need the same `exclude_patterns`. Call it once at startup (see [Usage](#usage)) and those defaults apply to JSON logs, pytest, and `install()`.
+Without `configure`, every `exc_to_json` call would need the same `exclude_patterns`. Call it once at startup (see [Usage](#usage)) and those defaults apply to JSON logs, pytest, and `install`.
 
 ```python
 from beautiful_traceback import configure, exc_to_json
@@ -326,14 +326,14 @@ except Exception:
     log.error("unhandled exception", **exc_to_json(sys.exc_info()))
 ```
 
-Per-call arguments always override `configure()` defaults. Formatting options passed to `install()` are also written into the same global config.
+Per-call arguments always override `configure` defaults. Formatting options passed to `install` are also written into the same global config.
 
 ## Threading Support
 
-`beautiful_traceback.install()` hooks both `sys.excepthook` and `threading.excepthook`, so unhandled exceptions in background threads are automatically formatted.
+`beautiful_traceback.install` hooks both `sys.excepthook` and `threading.excepthook`, so unhandled exceptions in background threads are automatically formatted.
 
 - Thread name and daemon status are shown in the exception header (e.g., `Exception in thread Worker-1 (daemon):`)
-- `exc_to_json()` accepts an optional `thread` parameter to include thread metadata in structured JSON output
+- `exc_to_json` accepts an optional `thread` parameter to include thread metadata in structured JSON output
 
 See [`examples/threading_example.py`](examples/threading_example.py) for a complete demonstration.
 
@@ -343,7 +343,7 @@ Check out the [examples/](examples/) directory for basic usage, exception chaini
 
 ## Configuration
 
-See [Usage](#usage) for when to call `configure()` vs `install()`. Options below apply to both.
+See [Usage](#usage) for when to call `configure` vs `install`. Options below apply to both.
 
 ```python
 beautiful_traceback.configure(
@@ -356,8 +356,8 @@ beautiful_traceback.install(
     color=True,  # Enable colored output
     only_tty=True,  # Only activate for TTY output
     only_hook_if_default_excepthook=True,  # Only install if default hook
-    local_stack_only=None,  # Defaults to configure() / BEAUTIFUL_TRACEBACK_LOCAL_STACK_ONLY
-    show_aliases=None,  # Defaults to configure() / BEAUTIFUL_TRACEBACK_SHOW_ALIASES (default: false)
+    local_stack_only=None,  # Defaults to configure / BEAUTIFUL_TRACEBACK_LOCAL_STACK_ONLY
+    show_aliases=None,  # Defaults to configure / BEAUTIFUL_TRACEBACK_SHOW_ALIASES (default: false)
     exclude_patterns=["click/core\\.py"],  # Regex patterns to drop frames
 )
 ```
@@ -365,11 +365,11 @@ beautiful_traceback.install(
 ### Environment Variables
 
 - **`NO_COLOR`** - Disables colored output when set (respects [no-color.org](https://no-color.org) standard)
-- **`BEAUTIFUL_TRACEBACK_ENABLED`** - Set to `false`/`0`/`no` to make `install()` a no-op. Useful when a library calls `install()` and an application wants it off.
+- **`BEAUTIFUL_TRACEBACK_ENABLED`** - Set to `false`/`0`/`no` to make `install` a no-op. Useful when a library calls `install` and an application wants it off.
 - **`BEAUTIFUL_TRACEBACK_LOCAL_STACK_ONLY`** - Set to `true`/`1`/`yes` to filter out library/framework frames.
 - **`BEAUTIFUL_TRACEBACK_SHOW_ALIASES`** - Set to `false`/`0`/`no` to hide the sys.path aliases section.
 
-These env vars serve as fallback defaults for both `install()` and the pytest plugin (CLI args and `pytest.ini` settings take precedence over env vars for pytest).
+These env vars serve as fallback defaults for both `install` and the pytest plugin (CLI args and `pytest.ini` settings take precedence over env vars for pytest).
 
 ### LoggingFormatterMixin
 

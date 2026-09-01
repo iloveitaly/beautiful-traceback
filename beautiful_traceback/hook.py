@@ -79,8 +79,8 @@ def install(
     another library (e.g. structlog-config) already installs an exception hook
     for structured logging.
 
-    For process-wide frame filters used by `exc_to_json()` and pytest, call
-    `configure()` instead — or in addition. `configure()` does not install a hook.
+    For process-wide frame filters used by `exc_to_json` and pytest, call
+    `configure` instead — or in addition. `configure` does not install a hook.
 
     If you set `only_tty=False`, beautiful_traceback will always
     be active even when stdout is piped or redirected.
@@ -99,14 +99,14 @@ def install(
             is still Python's default. Pass `False` to override an existing
             hook (rich, typer, etc).
         local_stack_only: Only include frames from `<pwd>`, filtering out
-            library frames. `None` uses `configure()` /
+            library frames. `None` uses `configure` /
             `BEAUTIFUL_TRACEBACK_LOCAL_STACK_ONLY`. Written into the global
             config when not `None`.
         exclude_patterns: Regex patterns matched against frame paths to drop
-            frames. `None` uses `configure()` defaults. Written into the
+            frames. `None` uses `configure` defaults. Written into the
             global config when not `None`.
         show_aliases: Show the sys.path aliases section. `None` uses
-            `configure()` / `BEAUTIFUL_TRACEBACK_SHOW_ALIASES` (default:
+            `configure` / `BEAUTIFUL_TRACEBACK_SHOW_ALIASES` (default:
             false). Written into the global config when not `None`.
     """
     if not config.env_bool("ENABLED", True):

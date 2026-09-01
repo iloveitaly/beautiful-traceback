@@ -1,6 +1,6 @@
 """JSON exception formatting for production logging.
 
-This module provides exc_to_json() which converts exceptions to structured
+This module provides `exc_to_json` which converts exceptions to structured
 dictionaries suitable for JSON logging in production environments.
 """
 
@@ -56,7 +56,7 @@ def exc_to_json(
 
     Args:
         exc_info: Either a (exc_type, exc_value, traceback) tuple as returned by
-            sys.exc_info(), or the exception instance directly (in which case
+            `sys.exc_info`, or the exception instance directly (in which case
             traceback must be passed as the second argument).
         traceback: The traceback object. Only used when exc_info is a BaseException instance.
         local_stack_only: Only include frames from <pwd>, filtering out library frames.
@@ -65,7 +65,7 @@ def exc_to_json(
 
     Returns:
         Dict with keys: "exception", "message", "frames". Optional keys:
-        - "notes": list of strings added via exc.add_note() (Python 3.11+)
+        - "notes": list of strings added via `exc.add_note` (Python 3.11+)
         - "syntax_error": dict of SyntaxError attributes (filename, lineno, offset, etc.)
         - "chain": list of chained exception dicts, each with a "relationship" key
           ("caused_by" for __cause__, "context" for __context__)
