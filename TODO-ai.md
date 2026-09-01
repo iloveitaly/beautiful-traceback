@@ -47,14 +47,14 @@
 
 - [ ] **Add option to disable path aliases in traceback**
   - File: See `TODO` file
-  - Feature: Add `show_aliases=True` parameter to `install`
+  - Feature: Add `show_aliases=True` parameter to `install()`
   - Impact: MEDIUM - Some users may prefer full paths always
   - Priority: ⚠️ MEDIUM
 
 - [ ] **Filter pytest internal frames from tracebacks**
   - File: See `TODO` file
   - Issue: Stack traces include too much pytest internal code
-  - Solution: Implement `_is_purely_internal_error` logic suggested in TODO
+  - Solution: Implement `_is_purely_internal_error()` logic suggested in TODO
   - Impact: MEDIUM - Makes test failures harder to read
   - Priority: ⚠️ MEDIUM
 

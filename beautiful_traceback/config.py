@@ -24,7 +24,7 @@ def configure(
 ) -> None:
     """Set process-wide defaults for traceback formatting.
 
-    Used by `exc_to_json`, `install`, and the pytest plugin. Call this at
+    Used by `exc_to_json()`, `install()`, and the pytest plugin. Call this at
     application startup so production JSON logs, test failures, and the
     exception hook all drop the same library frames.
 
