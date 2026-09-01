@@ -34,6 +34,7 @@ jobs:
   matrix-test:
     needs: lint
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
         python-version: ["3.14", "3.13", "3.12", "3.11", "3.10"]
@@ -44,7 +45,11 @@ jobs:
         with:
           bootstrap: true
           bootstrap_args: --update --yes
-      - run: mise use python@${{ matrix.python-version }}
+      # No -g: write the matrix pin into this repo's mise.toml, not ~/.config/mise.
+      - run: mise use --path mise.toml python@${{ matrix.python-version }}
+      - run: cat mise.toml
+      # mise-action already created .venv from the committed python = "3.14" pin.
+      - run: rm -rf .venv
       - uses: iloveitaly/github-action-direnv-load-and-mask@master
       - run: python --version
       - run: uv sync
