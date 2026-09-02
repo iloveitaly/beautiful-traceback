@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.1](https://github.com/iloveitaly/beautiful-traceback/compare/v1.0.0...v1.0.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* **pytest:** prevent crash on strict xfail unexpected pass ([dbf7d33](https://github.com/iloveitaly/beautiful-traceback/commit/dbf7d33ee531157aff3590db08749567c3547979))
+
+
+### Documentation
+
+* add per-parameter hover docs for install and configure ([#79](https://github.com/iloveitaly/beautiful-traceback/issues/79)) ([9681e8e](https://github.com/iloveitaly/beautiful-traceback/commit/9681e8e9f296cb64237065e1631e13a59c9997ca))
+
 ## [1.0.0](https://github.com/iloveitaly/beautiful-traceback/compare/v0.9.0...v1.0.0) (2026-06-03)
 
 
