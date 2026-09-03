@@ -47,7 +47,6 @@ jobs:
           bootstrap_args: --update --yes
       # No -g: write the matrix pin into this repo's mise.toml, not ~/.config/mise.
       - run: mise use --path mise.toml python@${{ matrix.python-version }}
-      - run: cat mise.toml
       # mise-action already created .venv from the committed python = "3.14" pin.
       - run: rm -rf .venv
       - uses: iloveitaly/github-action-direnv-load-and-mask@master
