@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/iloveitaly/beautiful-traceback/compare/v1.0.1...v1.0.2) (2026-09-04)
+
+
+### Bug Fixes
+
+* missing Python versions badge and real CI matrix ([#83](https://github.com/iloveitaly/beautiful-traceback/issues/83)) ([e7fff3b](https://github.com/iloveitaly/beautiful-traceback/commit/e7fff3be9bbc94b9f0caa5c764cac20f41ef10e5))
+
 ## [1.0.1](https://github.com/iloveitaly/beautiful-traceback/compare/v1.0.0...v1.0.1) (2026-09-01)
 
 
