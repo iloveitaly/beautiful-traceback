@@ -43,7 +43,9 @@ jobs:
         with:
           bootstrap: true
           bootstrap_args: --update --yes
-      - run: mise use python@${{ matrix.python-version }}
+      # No -g: write the matrix pin into this repo's mise.toml, not ~/.config/mise.
+      - run: mise use --path mise.toml python@${{ matrix.python-version }}
+      - run: uv venv --clear
       - uses: iloveitaly/github-action-direnv-load-and-mask@master
       - run: uv sync
       - run: uv run pytest
